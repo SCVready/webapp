@@ -188,7 +188,7 @@ def liveview():
 
 @app.route("/api/det_status", methods=['GET', 'POST'])
 @login_required
-def liveview():
+def api_det_status():
 	if request.method == 'GET':
 		ret = send_command('req det status')
 		if ret[0] == 1:
@@ -198,7 +198,7 @@ def liveview():
 			det_started = True
 		else:
 			det_started = False
-		return det_started
+		return str(det_started)
 	elif request.method == 'POST':
 		if request.form['det'] == 'start':
 			send_command('com det start')
@@ -207,7 +207,8 @@ def liveview():
 		return 'ok'
 
 @app.route("/api/lvw_status", methods=['GET', 'POST'])
-def liveview():
+@login_required
+def api_lvw_status():
 	if request.method == 'GET':
 		ret = send_command('req lvw status')
 		if ret[0] == 1:
@@ -217,7 +218,7 @@ def liveview():
 			lvw_started = True
 		else:
 			lvw_started = False
-		return lvw_started
+		return str(lvw_started)
 	elif request.method == 'POST':
 		if request.form['det'] == 'start':
 			send_command('com lvw start')
