@@ -16,7 +16,6 @@
 			<button class="btn-large waves-effect waves-light orange disabled ale_btn" name="liveview" value="stop">Stop</button>
 			{% endif %}
 		</form>
-		<button class="btn-large waves-effect waves-light orange ale_btn" onclick="test()" >socketio test</button>
 	</div>
 </div>
 {% endblock %}
@@ -33,7 +32,11 @@
 
 <script type="text/javascript" charset="utf-8">
 
-
+$.get( "/api/liveview", function( data ) {
+  if (data == "True") {
+    open_socketio()
+  }
+});
 
 function _arrayBufferToBase64( buffer ) {
     var binary = '';
@@ -45,7 +48,7 @@ function _arrayBufferToBase64( buffer ) {
     return window.btoa( binary );
 }
 
-function test() {
+function open_socketio() {
 	var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 	socket.on('connect', function() {
 		socket.emit('my event', {data: 'I\'m connected!'});

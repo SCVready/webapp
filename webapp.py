@@ -186,6 +186,45 @@ def liveview():
 			send_command('com lvw stop')
 		return redirect(url_for('liveview'))
 
+@app.route("/api/det_status", methods=['GET', 'POST'])
+@login_required
+def liveview():
+	if request.method == 'GET':
+		ret = send_command('req det status')
+		if ret[0] == 1:
+			return 'error'
+		det_started_str = ret[1]
+		if det_started_str == 'yes':
+			det_started = True
+		else:
+			det_started = False
+		return det_started
+	elif request.method == 'POST':
+		if request.form['det'] == 'start':
+			send_command('com det start')
+		elif request.form['det'] == 'stop':
+			send_command('com det stop')
+		return 'ok'
+
+@app.route("/api/lvw_status", methods=['GET', 'POST'])
+def liveview():
+	if request.method == 'GET':
+		ret = send_command('req lvw status')
+		if ret[0] == 1:
+			return 'error'
+		lvw_started_str = ret[1]
+		if lvw_started_str == 'yes':
+			lvw_started = True
+		else:
+			lvw_started = False
+		return lvw_started
+	elif request.method == 'POST':
+		if request.form['det'] == 'start':
+			send_command('com lvw start')
+		elif request.form['det'] == 'stop':
+			send_command('com lvw stop')
+		return 'ok'
+
 @app.route('/login', methods=['GET'])
 def login():
 	return render_template('login.html')
@@ -198,7 +237,6 @@ def request_login():
 		rand_wait_time = random.uniform(2,4)
 		time.sleep(rand_wait_time)
 	return redirect(url_for('index'))
-
 	
 @app.route('/logout')
 @login_required
