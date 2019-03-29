@@ -12,7 +12,7 @@
 	</head>
 	<body>
 		<nav class="blue-grey lighten-2" role="navigation">
-			<div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Logo</a>
+			<div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">PresenceOS</a>
 				<ul class="right hide-on-med-and-down"></ul>
 				<ul id="nav-mobile" class="side-nav"></ul>
 				<a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -23,22 +23,68 @@
 				<br><br>
 				<h1 class="header center grey-text">Login</h1>
 				<div class="row center">
-					<h5 class="header col s12 light">Password</h5>
+					<div class="col s8 input-field">
+						<input id="field_pass_id" type="password" class="validate">
+						<label id="lblfield_conf_pass_id" for="field_pass_id" data-error="Invalid Password">Password</label>
+					</div>
+					<div class="col s4 input-field">
+						<button class="btn waves-effect waves-light blue-grey lighten-2" id="id_button_login" onclick = 'login();'>Submit<i class="material-icons right">send</i></button>
+					</div>
 				</div>
-				<div class="row center">
-					<form action="request_login" class="col s12 m6 offset-m3" method="post">
-						<input type="password" name="password">
-						<button class="btn waves-effect waves-light blue-grey lighten-2" type="submit" name="action">Submit
-						<i class="material-icons right">send</i>
-						</button>
-					</form>
-				</div>
-				<br><br>
 			</div>
 		</div>
 		<!--  Scripts-->
 		<script src="js/jquery-3.3.1.min.js"></script>
 		<script src="js/materialize.js"></script>
 		<script src="js/init.js"></script>
+		<script src="js/sha512.js"></script>
+
+		<script type="text/javascript" charset="utf-8">
+
+		function login(){
+
+			var input_pass_obj = document.getElementById('field_pass_id');
+			var shaObj = new jsSHA("SHA-512", "TEXT");
+			shaObj.update(input_pass_obj.value);
+			var hash = shaObj.getHash("HEX");
+
+			$("#id_button_login").html('Submit<i class="material-icons right">panorama_fish_eye</i>')
+			$("#id_button_login").addClass("disabled");
+
+			$.post( "/request_login",{ password: hash} ,function( data ){
+					if( data == 'ok'){
+						$("#id_button_login").html('Submit<i class="material-icons right">check_circle</i>')
+						setTimeout(function(){ window.location.href = "/"; }, 1000);
+					}
+					else{
+						$("#id_button_login").html('Submit<i class="material-icons right">cancel</i>')
+						$("#field_pass_id").addClass("invalid");
+						$("#id_button_login").removeClass("disabled");
+					}
+					
+				});
+		};
+
+		$("#field_pass_id").on("keyup", function (e) {
+			if (event.key != "Enter") {
+		    	$("#id_button_login").html('Submit<i class="material-icons right">send</i>')
+		    	$("#field_pass_id").removeClass("invalid");
+			}
+		});
+
+		$("#field_pass_id").on("keydown", function (e) {
+			if (event.key == "Enter") {
+				login();
+			}
+		});
+		/*
+		// Enter key for login
+		$(document).keyup(function(event) {
+			if ($("field_pass_id:focus") && event.key == "Enter") {
+				login();
+			}
+		});
+		*/
+		</script>
 	</body>
 </html>

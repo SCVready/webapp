@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+<!-- TOP PANEL  -->
+{% block top_panel %}
+<div class="container">
+	<div class="row center">
+		<h5 class="header col s12 light">Configuration</h5>
+	</div>
+
+	<div class="row">
+		<div class="divider"></div>
+		<div class="col s12">
+			<div class="row">
+				<div class="col s4 input-field">
+					<input id="field_pass_id" type="password" class="validate">
+					<label for="field_pass_id">New Password</label>
+				</div>
+				<div class="col s4 input-field">
+					<input id="field_conf_pass_id" type="password">
+					<label id="lblfield_conf_pass_id" for="field_conf_pass_id" data-error="Password not match" data-success="Password Match">New Password (Confirm)</label>
+				</div>
+				<div class="col s4 input-field">
+					<button class="btn waves-effect waves-light blue-grey lighten-2 disabled" id="id_button_change_pass" onclick = 'password_submit();'><i class="material-icons left">cached</i>Change Password</button>
+				</div>
+			</div>
+		</div>
+		<div class="divider"></div>
+	</div>
+</div>
+{% endblock %}
+
+<!-- SCRIPTS -->
+{% block scripts %}
+<script type="text/javascript" charset="utf-8">
+
+function password_submit(parameters){
+	var input_pass_obj = document.getElementById('field_pass_id');
+	console.log('Pass: ${input_password_object.value}');
+
+	var shaObj = new jsSHA("SHA-512", "TEXT");
+	shaObj.update(input_pass_obj.value);
+	var hash = shaObj.getHash("HEX");
+
+	console.log('Pass hash: ${hash}');
+
+
+	$.post( "/options",{ password: hash} ,function( data ){
+		$("#id_button_change_pass").addClass("disabled");
+		if( data == 'ok'){
+			$("#id_button_change_pass").html('<i class="material-icons left">check_circle</i>Change Password')
+		}
+		else{
+			$("#id_button_change_pass").html('<i class="material-icons left">cancel</i>Change Password')
+		}
+		setTimeout(function(){ window.location.href = "/options"; }, 1000);
+	});
+}
+
+$("#field_pass_id").on("focusout", function (e) {
+    if ($(this).val() == $("#field_conf_pass_id").val() && $(this).val().length && $("#field_conf_pass_id").val().length) {
+        $("#field_conf_pass_id").removeClass("invalid").addClass("valid");
+        $("#id_button_change_pass").removeClass("disabled");
+    } else {
+        $("#field_conf_pass_id").removeClass("valid").addClass("invalid");
+        $("#id_button_change_pass").addClass("disabled");
+    }
+});
+
+$("#field_conf_pass_id").on("keyup", function (e) {
+    if ($("#field_pass_id").val() == $(this).val() && $(this).val().length && $("#field_pass_id").val().length) {
+        $(this).removeClass("invalid").addClass("valid");
+        $("#id_button_change_pass").removeClass("disabled");
+    } else {
+		$(this).removeClass("valid").addClass("invalid");
+        $("#id_button_change_pass").addClass("disabled");
+    }
+});
+
+</script>
+{% endblock %}

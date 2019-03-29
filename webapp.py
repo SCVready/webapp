@@ -5,25 +5,27 @@ import os, sys, socket, time, random, errno, functools
 from threading import Lock, Thread
 from time import sleep
 from common import send_command
+import hashlib
 
+
+# GLOBAL VARIABLES
 thread = None
 thread_lock = Lock()
-
 jpeg = None
 async_mode = None
-new_frame = False;
+new_frame = False
+login_pass_hash = None
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "ruyi618touipí043ewd" # a secret key for your app TODO rnd generation on init.d
 
-#LOGIN CONF
+# LOGIN CONF
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-#SOCKETIO CONF
+# SOCKETIO CONF
 socketio = SocketIO(app, async_mode=async_mode, manage_session=False)
-
 
 def authenticated_only(f):
 	@functools.wraps(f)
@@ -103,7 +105,14 @@ def load_user(user_id):
 class User(UserMixin):
 	def __init__(self,id):
 		self.id = id
-		
+
+@app.before_first_request
+def initialice_server():
+	global login_pass_hash
+	with open('/etc/gunicorn/password', 'r') as content_file:
+		content = content_file.read()
+	login_pass_hash = content.rstrip()
+
 @app.route("/", methods=['GET', 'POST'])
 @login_required
 def index():
@@ -164,6 +173,19 @@ def liveview():
 			send_command('com lvw stop')
 		return redirect(url_for('liveview'))
 
+@app.route("/options", methods=['GET', 'POST'])
+@login_required
+def options():
+	global login_pass_hash
+	if request.method == 'GET':
+		return render_template('options.html')
+	elif request.method == 'POST':
+		login_pass_hash= request.form['password']
+		with open('/etc/gunicorn/password', 'w') as file:
+			file.write(login_pass_hash)
+		logout_user()
+		return 'ok'
+
 @app.route("/api/det_status", methods=['GET', 'POST'])
 @login_required
 def api_det_status():
@@ -210,12 +232,12 @@ def login():
 	
 @app.route('/request_login', methods=['POST'])
 def request_login():
-	if request.form['password'] == 'pass':
+	global login_pass_hash
+	if request.form['password'] == login_pass_hash:
 		login_user(User(1))
+		return 'ok'
 	else:
-		rand_wait_time = random.uniform(2,4)
-		time.sleep(rand_wait_time)
-	return redirect(url_for('index'))
+		return 'no'	
 	
 @app.route('/logout')
 @login_required
