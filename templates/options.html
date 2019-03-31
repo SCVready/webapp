@@ -11,15 +11,15 @@
 		<div class="divider"></div>
 		<div class="col s12">
 			<div class="row">
-				<div class="col s4 input-field">
+				<div class="col s6 m4 input-field">
 					<input id="field_pass_id" type="password" class="validate">
 					<label for="field_pass_id">New Password</label>
 				</div>
-				<div class="col s4 input-field">
+				<div class="col s6 m4 input-field">
 					<input id="field_conf_pass_id" type="password">
 					<label id="lblfield_conf_pass_id" for="field_conf_pass_id" data-error="Password not match" data-success="Password Match">New Password (Confirm)</label>
 				</div>
-				<div class="col s4 input-field">
+				<div class="col s12 m4 input-field">
 					<button class="btn waves-effect waves-light blue-grey lighten-2 disabled" id="id_button_change_pass" onclick = 'password_submit();'><i class="material-icons left">cached</i>Change Password</button>
 				</div>
 			</div>
@@ -35,24 +35,25 @@
 
 function password_submit(parameters){
 	var input_pass_obj = document.getElementById('field_pass_id');
-	console.log('Pass: ${input_password_object.value}');
-
 	var shaObj = new jsSHA("SHA-512", "TEXT");
 	shaObj.update(input_pass_obj.value);
 	var hash = shaObj.getHash("HEX");
 
-	console.log('Pass hash: ${hash}');
+	$("#id_button_change_pass").addClass("disabled");
+	$("#id_button_change_pass").html('<i class="material-icons left">panorama_fish_eye</i>Change Password')
 
 
 	$.post( "/options",{ password: hash} ,function( data ){
-		$("#id_button_change_pass").addClass("disabled");
-		if( data == 'ok'){
-			$("#id_button_change_pass").html('<i class="material-icons left">check_circle</i>Change Password')
-		}
-		else{
-			$("#id_button_change_pass").html('<i class="material-icons left">cancel</i>Change Password')
-		}
-		setTimeout(function(){ window.location.href = "/options"; }, 1000);
+		setTimeout(function(){ 
+			if( data == 'ok'){
+				$("#id_button_change_pass").html('<i class="material-icons left">check_circle</i>Change Password')
+			}
+			else{
+				$("#id_button_change_pass").html('<i class="material-icons left">cancel</i>Change Password')
+			}
+			setTimeout(function(){ window.location.href = "/options"; }, 1000);
+		}, 1000);
+		
 	});
 }
 

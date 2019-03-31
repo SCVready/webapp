@@ -53,13 +53,18 @@
 
 			$.post( "/request_login",{ password: hash} ,function( data ){
 					if( data == 'ok'){
+						setTimeout(function(){ 
 						$("#id_button_login").html('Submit<i class="material-icons right">check_circle</i>')
 						setTimeout(function(){ window.location.href = "/"; }, 1000);
+						}, 1000);
 					}
 					else{
+						setTimeout(function(){ 
 						$("#id_button_login").html('Submit<i class="material-icons right">cancel</i>')
 						$("#field_pass_id").addClass("invalid");
 						$("#id_button_login").removeClass("disabled");
+						}, 1000);
+
 					}
 					
 				});
@@ -77,14 +82,6 @@
 				login();
 			}
 		});
-		/*
-		// Enter key for login
-		$(document).keyup(function(event) {
-			if ($("field_pass_id:focus") && event.key == "Enter") {
-				login();
-			}
-		});
-		*/
 		</script>
 	</body>
 </html>
