@@ -17,7 +17,7 @@ new_frame = False
 login_pass_hash = None
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "ruyi618touipí043ewd" # a secret key for your app TODO rnd generation on init.d
+app.config['SECRET_KEY'] = "todo" # a secret key for your app TODO rnd generation on init.d
 
 # LOGIN CONF
 login_manager = LoginManager()
