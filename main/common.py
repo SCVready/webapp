@@ -1,4 +1,8 @@
+from flask import Flask, render_template, request, abort, redirect, url_for, Response, g, send_file
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 import os, sys, socket, time, random, errno, functools
+
+# Common functions
 
 def send_command(comm):
 	server_address = "/run/kinectalarm/kinect_alarm_socket"
