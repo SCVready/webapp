@@ -1,63 +1,122 @@
 {% extends "base.html" %}
 
-<!-- TOP PANEL  -->
-{% block top_panel %}
-<div class="container">
-	<div class="row center">
-		<h5 class="header col s12 light">Control Liveview</h5>
-	</div>
-	<div class="row center">
-		<form action="" method="post">
-			{% if lvw_started %}
-			<button class="btn-large waves-effect waves-light orange disabled ale_btn" name="liveview" value="start">Start</button>
-			<button class="btn-large waves-effect waves-light orange ale_btn" name="liveview" value="stop">Stop</button>
-			{% else %}
-			<button class="btn-large waves-effect waves-light orange ale_btn" name="liveview" value="start">Start</button>
-			<button class="btn-large waves-effect waves-light orange disabled ale_btn" name="liveview" value="stop">Stop</button>
-			{% endif %}
-		</form>
-	</div>
-</div>
-{% endblock %}
-<!-- CONTENT  -->
-{% block content %}
-<div class="row center">
-	<h1><img id="liveview_img" class="responsive-img"></h1>
+<!-- Page Heading -->
+{% block page_heading %}
+<div class="row mb-3">
+  <div class="col-12 col-sm-4">
+    <h1 class="h3 mb-0 text-gray-800">Liveview</h1>
+  </div>
+
+  <div class="col-12 col-sm-8">
+    <div class="float-sm-right">
+      {% if lvw_started %}
+      <button id="btn_start" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm disabled" onclick = 'start_lvw();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start LiveView</button>
+      <button id="btn_stop" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick = 'stop_lvw();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop LiveView</button>
+      {% else %}
+      <button id="btn_start" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick = 'start_lvw();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start LiveView</button>
+      <button id="btn_stop" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm disabled" onclick = 'stop_lvw();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop LiveView</button>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}
 
-<!-- SCRIPTS -->
-{% block scripts %}
+<!-- Content Row -->
+{% block page_content %}
+<div class="row">
+
+  <div class="col-lg-7 mb-0">
+
+    <!-- Illustrations -->
+    <div class="card shadow mb-2">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Liveview</h6>
+      </div>
+      <div class="card-body">
+        <div class="text-center">
+          <img class="img-fluid px-0 px-sm-0 mt-0 mb-0" style="width: 100%" src="images/placeholder.jpeg" id="liveview_img" alt="">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-lg-5 mb-0">
+
+    <!-- Approach -->
+    <div class="card shadow mb-0">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Controls</h6>
+      </div>
+      <div class="card-body">
+        <p>Buttons</p>
+        <p>Buttons</p>
+	<p>Buttons</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+
+{% block page_script %}
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-
 <script type="text/javascript" charset="utf-8">
 
-$.get( "/api/lvw_status", function( data ) {
-  if (data == "True") {
-    open_socketio()
+  function start_lvw(){
+    $.post( "/api/lvw_status",{ lvw: "start"} ,function( data ){
+      if( data == 'ok'){
+          $("#btn_start").addClass("disabled");
+          $("#btn_stop").removeClass("disabled");
+          lvw_is_started = true;
+        }
+      else{
+          console.log("ERROR");
+      }
+    });
+  };
+
+  function stop_lvw(){
+    $.post( "/api/lvw_status",{ lvw: "stop"} ,function( data ){
+      if( data == 'ok'){
+          $("#btn_start").removeClass("disabled");
+          $("#btn_stop").addClass("disabled");
+          var img = document.getElementById("liveview_img");
+          img.src = "images/placeholder.jpeg";
+          lvw_is_started = false;
+        }
+      else{
+          console.log("ERROR");
+      }
+    });
+  };
+
+  function open_socketio() {
+
+    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+    socketio.on('connect', function() {
+	    socketio.emit('my event', {data: 'I\'m connected!'});
+    });
+    socketio.on('my event', function(data) {
+	    var img = document.getElementById("liveview_img");
+      if(lvw_is_started){
+	    img.src = 'data:image/jpg;base64,' + data.frame;}
+    });
   }
-});
 
-function _arrayBufferToBase64( buffer ) {
-    var binary = '';
-    var bytes = new Uint8Array( buffer );
-    var len = bytes.byteLength;
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode( bytes[ i ] );
+  lvw_is_started = false;
+
+  $.get( "/api/lvw_status", function( data ) {
+    if (data == "True") {
+      lvw_is_started = true;
     }
-    return window.btoa( binary );
-}
+  });
 
-function open_socketio() {
-	var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-	socket.on('connect', function() {
-		socket.emit('my event', {data: 'I\'m connected!'});
-	});
-	socket.on('my event', function(data) {
-		var img = document.getElementById("liveview_img");
-		//img.src = 'data:image/jpg;base64,' + _arrayBufferToBase64(data.frame);
-		img.src = 'data:image/jpg;base64,' + data.frame;
-	});
-}
+  open_socketio();
 </script>
+
 {% endblock %}
+

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+<!-- Page Heading -->
+{% block page_heading %}
+<div class="row mb-3">
+  <div class="col-12 col-sm-4">
+    <h1 class="h3 mb-0 text-gray-800">Detection</h1>
+  </div>
+
+  <div class="col-12 col-sm-8">
+    <div class="float-sm-right">
+      {% if det_started %}
+      <button id="btn_start" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm disabled" onclick = 'start_det();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start Detection</button>
+      <button id="btn_stop" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick = 'stop_det();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop Detection</button>
+      {% else %}
+      <button id="btn_start" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick = 'start_det();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start Detection</button>
+      <button id="btn_stop" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm disabled" onclick = 'stop_det();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop Detection</button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+<!-- Content Row -->
+{% block page_content %}
+<div class="row">
+
+  <div class="col-lg-6 mb-0">
+    <!-- Approach -->
+    <div class="card shadow mb-0">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Intrusions</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Accuracy</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in range(det_num) %}
+                <tr>
+                  <td><button onclick = "show_capture({{ i }});" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ i }}</button></td>
+                  <td>2019/04/25 12:21:21</td>
+                  <td>100%</td>
+                </tr>
+		          {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-lg-6 mb-0">
+    <!-- Illustrations -->
+    <div class="card shadow mb-0">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Capture</h6>
+      </div>
+      <div class="card-body">
+        <div class="text-center">
+          {% if det_num > 0 %}
+          <img id="capture" class="img-fluid px-0 px-sm-0 mt-0 mb-4" style="width: 100%" src="detection/0/2" alt="">
+          {% else %}
+          <img id="capture" class="img-fluid px-0 px-sm-0 mt-0 mb-4" style="width: 100%" src="images/placeholder.jpeg" alt="">
+          {% endif %}
+          <p class="mb-2">Data</p>
+          <p class="mb-2">Data</p>
+          <p class="mb-2">Data</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+
+{% block page_script %}
+<script type="text/javascript" charset="utf-8">
+  function start_det(){
+    $.post( "/api/det_status",{ det: "start"} ,function( data ){
+      if( data == 'ok'){
+          $("#btn_start").addClass("disabled");
+          $("#btn_stop").removeClass("disabled");
+        }
+      else{
+          console.log("ERROR");
+      }
+    });
+  };
+  function stop_det(){
+    $.post( "/api/det_status",{ det: "stop"} ,function( data ){
+      if( data == 'ok'){
+          $("#btn_start").removeClass("disabled");
+          $("#btn_stop").addClass("disabled");
+        }
+      else{
+          console.log("ERROR");
+      }
+    });
+  };
+
+  function show_capture(num_det) {
+    var img = document.getElementById("capture");
+    img.src = "detection/"+num_det+"/2";
+  };
+</script>
+
+{% endblock %}
+

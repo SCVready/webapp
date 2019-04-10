@@ -45,9 +45,9 @@ def api_lvw_status():
 			lvw_started = False
 		return str(lvw_started)
 	elif request.method == 'POST':
-		if request.form['det'] == 'start':
+		if request.form['lvw'] == 'start':
 			common.send_command('com lvw start')
-		elif request.form['det'] == 'stop':
+		elif request.form['lvw'] == 'stop':
 			common.send_command('com lvw stop')
 		return 'ok'
 
