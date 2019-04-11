@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, abort, redirect, url_for, Res
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 import common
-from auth import User,get_login_pass_hash
+from auth import User,get_login_pass_hash,set_login_pass_hash
 
 routes_services = Blueprint('services', __name__, template_folder='templates', static_folder='static')
 
@@ -52,13 +52,22 @@ def api_lvw_status():
 		return 'ok'
 
 @login_required
-def reset_detection():
+def change_password():
+	set_login_pass_hash(request.form['password'])
+	with open('/etc/gunicorn/password', 'w') as file:
+		file.write(get_login_pass_hash())
+	logout_user()
+	return 'ok'
+
+@login_required
+def delete_detections():
 	if request.form['delete_detections'] == 'true':
 		common.send_command('com det rst')
-	return redirect(url_for('pages.index'))
+	return 'ok'
 
 # Routes
 routes_services.add_url_rule('/request_login', 'request_login', request_login, methods=['POST'])
 routes_services.add_url_rule('/api/det_status', 'api_det_status', api_det_status, methods=['GET', 'POST'])
 routes_services.add_url_rule('/api/lvw_status', 'api_lvw_status', api_lvw_status, methods=['GET', 'POST'])
-routes_services.add_url_rule('/reset_detection', 'reset_detection', reset_detection, methods=['POST'])
+routes_services.add_url_rule('/api/delete_detections', 'api_delete_detections', delete_detections, methods=['POST'])
+routes_services.add_url_rule('/api/change_password', 'api_change_password', change_password, methods=['POST'])

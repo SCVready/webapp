@@ -13,31 +13,56 @@ def index():
 
 @login_required
 def dashboard():
-	return render_template('dashboard.html')
+	ret = common.send_command('req lvw status')
+	if ret[0] == 1:
+		return render_template('error.html')
+	lvw_started_str = ret[1]
+	if lvw_started_str == 'yes':
+		lvw_started = True
+	else:
+		lvw_started = False
+	print('lvw started %d' % (lvw_started))
+
+	ret = common.send_command('req det status')
+	if ret[0] == 1:
+		return render_template('error.html')
+	det_started_str = ret[1]
+	if det_started_str == 'yes':
+		det_started = True
+	else:
+		det_started = False
+	print('det started %d' % (det_started))
+
+	return render_template('dashboard.html',det_started=det_started,lvw_started=lvw_started)
 
 @login_required
 def detection():
-	if request.method == 'GET':
-		ret = common.send_command('req det status')
-		if ret[0] == 1:
-			return render_template('error.html')
-		det_started_str = ret[1]
-		if det_started_str == 'yes':
-			det_started = True
-		else:
-			det_started = False
-		print('det started %d' % (det_started))
-		ret = common.send_command('req det num')
-		if ret[0] == 1:
-			return render_template('error.html')
-		det_num = int(ret[1])
-		return render_template('detection.html',det_started=det_started,det_num=det_num)
-	elif request.method == 'POST':
-		if request.form['detection'] == 'start':
-			common.send_command('com det start')
-		elif request.form['detection'] == 'stop':
-			common.send_command('com det stop')
-		return redirect(url_for('pages.index'))
+	ret = common.send_command('req det status')
+	if ret[0] == 1:
+		return render_template('error.html')
+	det_started_str = ret[1]
+	if det_started_str == 'yes':
+		det_started = True
+	else:
+		det_started = False
+	print('det started %d' % (det_started))
+
+	ret = common.send_command('req det num')
+	if ret[0] == 1:
+		return render_template('error.html')
+	det_num = int(ret[1])
+
+	ret = common.send_command('req lvw status')
+	if ret[0] == 1:
+		return render_template('error.html')
+	lvw_started_str = ret[1]
+	if lvw_started_str == 'yes':
+		lvw_started = True
+	else:
+		lvw_started = False
+	print('lvw started %d' % (lvw_started))
+
+	return render_template('detection.html',det_started=det_started,lvw_started=lvw_started,det_num=det_num)
 
 @login_required
 def get_det_image(det_number,img_number):
@@ -48,38 +73,74 @@ def get_det_image(det_number,img_number):
 
 @login_required
 def liveview():
-	if request.method == 'GET':
-		ret = common.send_command('req lvw status')
-		if ret[0] == 1:
-			return render_template('error.html')
-		lvw_started_str = ret[1]
-		if lvw_started_str == 'yes':
-			lvw_started = True
-		else:
-			lvw_started = False
-		print('lvw started %d' % (lvw_started))
-		return render_template('liveview.html',lvw_started=lvw_started)
-	elif request.method == 'POST':
-		if request.form['liveview'] == 'start':
-			common.send_command('com lvw start')
-		elif request.form['liveview'] == 'stop':
-			common.send_command('com lvw stop')
-		return redirect(url_for('pages.liveview'))
+	ret = common.send_command('req lvw status')
+	if ret[0] == 1:
+		return render_template('error.html')
+	lvw_started_str = ret[1]
+	if lvw_started_str == 'yes':
+		lvw_started = True
+	else:
+		lvw_started = False
+	print('lvw started %d' % (lvw_started))
+
+	ret = common.send_command('req det status')
+	if ret[0] == 1:
+		return render_template('error.html')
+	det_started_str = ret[1]
+	if det_started_str == 'yes':
+		det_started = True
+	else:
+		det_started = False
+	print('det started %d' % (det_started))
+
+	return render_template('liveview.html',det_started=det_started,lvw_started=lvw_started)
 
 @login_required
 def options():
-	if request.method == 'GET':
-		return render_template('options.html')
-	elif request.method == 'POST':
-		set_login_pass_hash(request.form['password'])
-		with open('/etc/gunicorn/password', 'w') as file:
-			file.write(get_login_pass_hash())
-		logout_user()
-		return 'ok'
+	ret = common.send_command('req lvw status')
+	if ret[0] == 1:
+		return render_template('error.html')
+	lvw_started_str = ret[1]
+	if lvw_started_str == 'yes':
+		lvw_started = True
+	else:
+		lvw_started = False
+	print('lvw started %d' % (lvw_started))
+
+	ret = common.send_command('req det status')
+	if ret[0] == 1:
+		return render_template('error.html')
+	det_started_str = ret[1]
+	if det_started_str == 'yes':
+		det_started = True
+	else:
+		det_started = False
+	print('det started %d' % (det_started))	
+	
+	return render_template('options.html',det_started=det_started,lvw_started=lvw_started)
 
 @login_required
 def log():
-	return render_template('log.html')
+	ret = common.send_command('req lvw status')
+	if ret[0] == 1:
+		return render_template('error.html')
+	lvw_started_str = ret[1]
+	if lvw_started_str == 'yes':
+		lvw_started = True
+	else:
+		lvw_started = False
+	print('lvw started %d' % (lvw_started))
+
+	ret = common.send_command('req det status')
+	if ret[0] == 1:
+		return render_template('error.html')
+	det_started_str = ret[1]
+	if det_started_str == 'yes':
+		det_started = True
+	else:
+		det_started = False
+	print('det started %d' % (det_started))	
+	return render_template('log.html',det_started=det_started,lvw_started=lvw_started)
 
 def login():
 	return render_template('login.html')
@@ -97,7 +158,7 @@ routes_pages.add_url_rule('/', 'index', index, methods=['GET'])
 routes_pages.add_url_rule('/dashboard', 'dashboard', dashboard, methods=['GET'])
 routes_pages.add_url_rule('/detection', 'detection', detection, methods=['GET', 'POST'])
 routes_pages.add_url_rule('/liveview', 'liveview', liveview, methods=['GET', 'POST'])
-routes_pages.add_url_rule('/options', 'options', options, methods=['GET', 'POST'])
+routes_pages.add_url_rule('/options', 'options', options, methods=['GET'])
 routes_pages.add_url_rule('/log', 'log', log, methods=['GET'])
 routes_pages.add_url_rule('/detection/<det_number>/<img_number>', 'get_det_image', get_det_image, methods=['GET'])
 

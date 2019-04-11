@@ -6,6 +6,30 @@
   <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
     <i class="fa fa-bars"></i>
   </button>
+  
+  
+  <!-- Nav Item - Summary -->
+  <span class="mr-2 d-none d-lg-inline text-gray-600 small">Detection</span>
+  <a class="btn btn-sm rounded-circle mr-3" href="/detection">
+{% if det_started %}
+    <div id="summary_det_status" class="icon-circle bg-warning">
+{% else %}
+    <div id="summary_det_status" class="icon-circle bg-primary">
+{% endif %}
+      <i class="fas fa-crosshairs text-white"></i>
+    </div>
+  </a>
+  
+  <span class="mr-2 d-none d-lg-inline text-gray-600 small">Liveview</span>
+  <a class="btn btn-sm rounded-circle mr-3" href="/liveview">
+ {% if lvw_started %}
+    <div id="summary_lvw_status" class="icon-circle bg-warning">
+{% else %}
+    <div id="summary_lvw_status" class="icon-circle bg-primary">
+{% endif %}
+      <i class="fas fa-eye text-white"></i>
+    </div>
+  </a>
 
   <!-- Topbar Navbar -->
   <ul class="navbar-nav ml-auto">
@@ -47,7 +71,7 @@
       </a>
       <!-- Dropdown - User Information -->
       <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-        <a class="dropdown-item" href="#">
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#changepassModal">
           <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
           Change Password
         </a>

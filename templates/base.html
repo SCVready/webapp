@@ -18,6 +18,8 @@
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
+  {% block page_style %}{% endblock %}
+
 </head>
 
 <body id="page-top">
@@ -78,6 +80,27 @@
       </div>
     </div>
   </div>
+  
+	<div class="modal fade" id="changepassModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Change access password.</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        <input type="password" class="form-control form-control-user" id="field_pass" placeholder="New password">
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" type="button" onclick = 'submit_new_pass();'>Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>
@@ -95,6 +118,23 @@
 
   <!-- Page level custom scripts -->
   <script src="js/demo/datatables-demo.js"></script>
+  
+  <!-- Change password scripts -->
+  <script type="text/javascript" charset="utf-8">
+  
+    function submit_new_pass(){
+      var input_pass = document.getElementById('field_pass').value;
+      $.post( "/api/change_password",{ password: input_pass} ,function( data ){
+      if( data == 'ok'){
+          window.location.href = "/login";
+        }
+      else{
+          console.log("ERROR");
+        }
+      });
+    };
+  
+  </script>
   {% block page_script %}{% endblock %}
 
 </body>

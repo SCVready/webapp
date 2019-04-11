@@ -1,20 +1,121 @@
 {% extends "base.html" %}
 
+<!-- Custom style -->
+{% block page_style %}
+<style>
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;   
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%; 
+  background: #224abe;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #224abe;
+  cursor: pointer;
+}
+</style>
+
+<style>
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider_switch {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider_switch:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider_switch {
+  background-color: #4e73df;
+}
+
+input:focus + .slider_switch {
+  box-shadow: 0 0 1px #4e73df;
+}
+
+input:checked + .slider_switch:before {
+  -webkit-transform: translateX(30px);
+  -ms-transform: translateX(30px);
+  transform: translateX(30px);
+}
+
+/* Rounded sliders */
+.slider_switch.round {
+  border-radius: 34px;
+}
+
+.slider_switch.round:before {
+  border-radius: 50%;
+}
+</style>
+
+{% endblock %}
+
 <!-- Page Heading -->
 {% block page_heading %}
 <div class="row mb-3">
-  <div class="col-12 col-sm-4">
+  <div class="col-5 col-sm-3">
     <h1 class="h3 mb-0 text-gray-800">Liveview</h1>
   </div>
 
-  <div class="col-12 col-sm-8">
-    <div class="float-sm-right">
+  <div class="col-7 col-sm-9">
+    <div class="float-right">
       {% if lvw_started %}
-      <button id="btn_start" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm disabled" onclick = 'start_lvw();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start LiveView</button>
-      <button id="btn_stop" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick = 'stop_lvw();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop LiveView</button>
+      <button id="btn_start" class="btn btn-sm btn-primary shadow-sm disabled" onclick = 'start_lvw();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start <span class="d-none d-sm-inline-block">LiveView</span></button>
+      <button id="btn_stop" class="btn btn-sm btn-primary shadow-sm" onclick = 'stop_lvw();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop <span class="d-none d-sm-inline-block">LiveView</span></button>
       {% else %}
-      <button id="btn_start" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick = 'start_lvw();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start LiveView</button>
-      <button id="btn_stop" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm disabled" onclick = 'stop_lvw();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop LiveView</button>
+      <button id="btn_start" class="btn btn-sm btn-primary shadow-sm" onclick = 'start_lvw();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start <span class="d-none d-sm-inline-block">LiveView</span></button>
+      <button id="btn_stop" class="btn btn-sm btn-primary shadow-sm disabled" onclick = 'stop_lvw();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop <span class="d-none d-sm-inline-block">LiveView</span></button>
       {% endif %}
     </div>
   </div>
@@ -49,9 +150,22 @@
         <h6 class="m-0 font-weight-bold text-primary">Controls</h6>
       </div>
       <div class="card-body">
-        <p>Buttons</p>
-        <p>Buttons</p>
-	<p>Buttons</p>
+        <!-- Button -->
+        <div class="mb-4">
+          <button id="test" class="btn btn-sm btn-primary shadow-sm" onclick = 'button_test();'>Test</button>
+        </div>
+        <!-- switch -->
+        <div class="mb-4">
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider_switch round"></span>
+          </label>
+        </div>
+        <!-- Slider -->
+        <div class="mb-4">
+	        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" onchange="updateSlider(this.value)">
+	      </div>
+	      
       </div>
     </div>
 
@@ -70,6 +184,7 @@
       if( data == 'ok'){
           $("#btn_start").addClass("disabled");
           $("#btn_stop").removeClass("disabled");
+          $("#summary_lvw_status").removeClass("bg-primary").addClass("bg-warning");
           lvw_is_started = true;
         }
       else{
@@ -83,6 +198,7 @@
       if( data == 'ok'){
           $("#btn_start").removeClass("disabled");
           $("#btn_stop").addClass("disabled");
+          $("#summary_lvw_status").removeClass("bg-warning").addClass("bg-primary");
           var img = document.getElementById("liveview_img");
           img.src = "images/placeholder.jpeg";
           lvw_is_started = false;
@@ -116,6 +232,12 @@
   });
 
   open_socketio();
+  
+  function updateSlider(slideAmount) {
+    console.log(slideAmount);;
+  }
+  
+  
 </script>
 
 {% endblock %}
