@@ -29,10 +29,12 @@ import main.events
 
 # Component initialization
 from main.auth import initialize_auth
+from main.db import initialize_db
 
 @app.before_first_request
 def initialice_server():
 	initialize_auth()
+	initialize_db()
 
 
 

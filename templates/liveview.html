@@ -226,7 +226,7 @@ input:checked + .slider_switch:before {
   lvw_is_started = false;
 
   $.get( "/api/lvw_status", function( data ) {
-    if (data == "True") {
+    if (data == "1") {
       lvw_is_started = true;
     }
   });

@@ -3,6 +3,7 @@ from flask_login import LoginManager, UserMixin, login_required, login_user, log
 
 import common
 from auth import User,get_login_pass_hash,set_login_pass_hash
+from db import redis_con
 
 routes_services = Blueprint('services', __name__, template_folder='templates', static_folder='static')
 
@@ -16,15 +17,8 @@ def request_login():
 @login_required
 def api_det_status():
 	if request.method == 'GET':
-		ret = common.send_command('req det status')
-		if ret[0] == 1:
-			return 'error'
-		det_started_str = ret[1]
-		if det_started_str == 'yes':
-			det_started = True
-		else:
-			det_started = False
-		return str(det_started)
+		det_status = int(redis_con.get_var('det_status'))
+		return str(det_status)
 	elif request.method == 'POST':
 		if request.form['det'] == 'start':
 			common.send_command('com det start')
@@ -35,15 +29,8 @@ def api_det_status():
 @login_required
 def api_lvw_status():
 	if request.method == 'GET':
-		ret = common.send_command('req lvw status')
-		if ret[0] == 1:
-			return 'error'
-		lvw_started_str = ret[1]
-		if lvw_started_str == 'yes':
-			lvw_started = True
-		else:
-			lvw_started = False
-		return str(lvw_started)
+		lvw_status = int(redis_con.get_var('lvw_status'))
+		return str(lvw_status)
 	elif request.method == 'POST':
 		if request.form['lvw'] == 'start':
 			common.send_command('com lvw start')
