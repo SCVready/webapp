@@ -13,6 +13,9 @@ class redis_connection:
 
 	def get_var(self,var):
 		return self.r.get(var)
+	
+	def publish(self,channel,message):
+		self.r.publish(channel, message)
 
 redis_con = redis_connection()
 

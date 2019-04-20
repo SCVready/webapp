@@ -114,7 +114,7 @@
   function delete_captures(){
     $.post( "/api/delete_detections",{ delete_detections: "true"} ,function( data ){
       if( data == 'ok'){
-          window.location.reload(false); 
+          setTimeout(function() {window.location.reload(false); }, 500);
         }
       else{
           console.log("ERROR");

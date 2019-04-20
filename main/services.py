@@ -21,9 +21,9 @@ def api_det_status():
 		return str(det_status)
 	elif request.method == 'POST':
 		if request.form['det'] == 'start':
-			common.send_command('com det start')
+			redis_con.publish('kinectalarm','det start')
 		elif request.form['det'] == 'stop':
-			common.send_command('com det stop')
+			redis_con.publish('kinectalarm','det stop')
 		return 'ok'
 
 @login_required
@@ -33,9 +33,9 @@ def api_lvw_status():
 		return str(lvw_status)
 	elif request.method == 'POST':
 		if request.form['lvw'] == 'start':
-			common.send_command('com lvw start')
+			redis_con.publish('kinectalarm','lvw start')
 		elif request.form['lvw'] == 'stop':
-			common.send_command('com lvw stop')
+			redis_con.publish('kinectalarm','lvw stop')
 		return 'ok'
 
 @login_required
@@ -49,7 +49,7 @@ def change_password():
 @login_required
 def delete_detections():
 	if request.form['delete_detections'] == 'true':
-		common.send_command('com det rst')
+		redis_con.publish('kinectalarm','det rst')
 	return 'ok'
 
 # Routes
