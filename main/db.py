@@ -4,9 +4,13 @@ import redis
 class redis_connection:
 	def __init__(self):
 		self.r = None
+		self.p = None
+		self.init = False
 
 	def connect(self):
-		self.r = redis.Redis(host='localhost', port=6379, db=0)
+		self.r = redis.Redis(unix_socket_path='/tmp/redis.sock')
+		self.p = self.r.pubsub()
+		self.init = True
 
 	def set_var(self,var,value):
 		return self.r.set(var,value)
@@ -17,7 +21,14 @@ class redis_connection:
 	def publish(self,channel,message):
 		self.r.publish(channel, message)
 
+	def subscribe(self,channel):
+		self.p.psubscribe(channel)
+
+	def get_message(self):
+		return self.p.get_message()
+
 redis_con = redis_connection()
 
 def initialize_db():
-	redis_con.connect()
+	if not redis_con.init:
+		redis_con.connect()
