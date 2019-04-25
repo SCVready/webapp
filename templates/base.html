@@ -17,12 +17,17 @@
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
+  <link href="css/js-snackbar.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
 
   {% block page_style %}{% endblock %}
 
 </head>
 
 <body id="page-top">
+
+  <!-- Snackbar -->
+  <div id="snackbar"></div>
 
   <!-- Page Wrapper -->
   <div id="wrapper">
@@ -111,14 +116,15 @@
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
+  <script src="js/js-snackbar.min.js"></script>
 
   <!-- Page level plugins -->
   <script src="vendor/datatables/jquery.dataTables.min.js"></script>
   <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-  <!-- Page level custom scripts -->
-  <script src="js/demo/datatables-demo.js"></script>
   
+  <!-- Socketio -->
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
   <!-- Change password scripts -->
   <script type="text/javascript" charset="utf-8">
   
@@ -133,6 +139,24 @@
         }
       });
     };
+
+    function listes_to_events() {
+
+      var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+      socketio.on('connect', function() {
+        socketio.emit('my event', {data: 'I\'m connected!'});
+      });
+      
+      socketio.on('kinectalarm_event', function(data) {
+        SnackBar({
+          message: "New Intrusion",
+          status: "danger"
+        });
+      });
+    };
+
+    listes_to_events();
   
   </script>
   {% block page_script %}{% endblock %}

@@ -67,7 +67,7 @@
       <div class="card-body">
         <div class="text-center">
           {% if det_num > 0 %}
-          <img id="capture" class="img-fluid px-0 px-sm-0 mt-0 mb-4" style="width: 100%" src="detection/0/2" alt="">
+          <img id="capture" class="img-fluid px-0 px-sm-0 mt-0 mb-4" style="width: 100%" src="detection/{{ det_num-1 }}/2" alt="">
           {% else %}
           <img id="capture" class="img-fluid px-0 px-sm-0 mt-0 mb-4" style="width: 100%" src="images/placeholder.jpeg" alt="">
           {% endif %}
@@ -126,6 +126,44 @@
     var img = document.getElementById("capture");
     img.src = "detection/"+num_det+"/2";
   };
+  
+  
+  function update_detection_table() {
+
+    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+    socketio.on('connect', function() {
+      socketio.emit('my event', {data: 'I\'m connected!'});
+    });
+    
+    socketio.on('kinectalarm_event', function(data) {
+      var event_words = data.frame.split(' ');
+      var num_event_words = event_words.length;
+      
+      if(num_event_words == 2){
+        if(event_words[0] == 'newdet'){
+          setTimeout(function() {
+            det_table.row.add( [
+              '<button onclick = "show_capture('+event_words[1]+');" class="btn btn-sm btn-primary shadow-sm">'+event_words[1]+'</button>',
+              '2019/04/25 12:21:21',
+              '100%',
+              ] ).draw( false );
+            show_capture(event_words[1]);
+          }, 2000);
+        }
+      }
+    });
+  };
+
+  update_detection_table();
+
+  // Call the dataTables jQuery plugin
+  $(document).ready(function() {
+    det_table = $('#dataTable').DataTable( {
+        "order": [[ 0, "desc" ]]
+    } );
+  });
+
 </script>
 
 {% endblock %}

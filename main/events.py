@@ -22,10 +22,14 @@ def authenticated_only(f):
 def background_thread():
 	initialize_db()
 	redis_con.subscribe('liveview')
+	redis_con.subscribe('kinectalarm_event')
 	while True:
 		message = redis_con.get_message()
 		if message:
-			socketio.emit('my event', {'frame': message['data']})
+			if message['channel'] == 'liveview':
+				socketio.emit('my event', {'frame': message['data']})
+			if message['channel'] == 'kinectalarm_event':
+				socketio.emit('kinectalarm_event', {'frame': message['data']})
 		socketio.sleep(0.01)
 
 @socketio.on('my event')
@@ -36,3 +40,10 @@ def connect(json):
 		if thread is None:
 			thread = socketio.start_background_task(background_thread)
 
+@socketio.on('kinectalarm_event')
+@authenticated_only
+def connect(json):
+	global thread
+	with thread_lock:
+		if thread is None:
+			thread = socketio.start_background_task(background_thread)
