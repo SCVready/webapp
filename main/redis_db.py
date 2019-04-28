@@ -1,16 +1,15 @@
 
 import redis
 
-class redis_connection:
+class redis_database:
 	def __init__(self):
 		self.r = None
 		self.p = None
-		self.init = False
 
 	def connect(self):
-		self.r = redis.Redis(unix_socket_path='/tmp/redis.sock')
-		self.p = self.r.pubsub()
-		self.init = True
+		if not self.r:
+			self.r = redis.Redis(unix_socket_path='/tmp/redis.sock')
+			self.p = self.r.pubsub()
 
 	def set_var(self,var,value):
 		return self.r.set(var,value)
@@ -27,8 +26,4 @@ class redis_connection:
 	def get_message(self):
 		return self.p.get_message()
 
-redis_con = redis_connection()
-
-def initialize_db():
-	if not redis_con.init:
-		redis_con.connect()
+redis_db = redis_database()

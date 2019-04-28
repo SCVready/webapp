@@ -38,17 +38,17 @@
               <tr>
                 <th>ID</th>
                 <th>Date</th>
-                <th>Accuracy</th>
+                <th>Duration</th>
               </tr>
             </thead>
             <tbody>
-              {% for i in range(det_num) %}
+              {% for det in detections %}
                 <tr>
-                  <td><button onclick = "show_capture({{ i }});" class="btn btn-sm btn-primary shadow-sm">{{ i }}</button></td>
-                  <td>2019/04/25 12:21:21</td>
-                  <td>100%</td>
+                  <td><button onclick = "show_capture({{ det[0] }});" class="btn btn-sm btn-primary shadow-sm">{{ det[0] }}</button></td>
+                  <td>{{ det[1] }}</td>
+                  <td>{{ det[2] }}</td>
                 </tr>
-		          {% endfor %}
+	      {% endfor %}
             </tbody>
           </table>
         </div>

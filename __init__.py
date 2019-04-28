@@ -29,13 +29,12 @@ import main.events
 
 # Component initialization
 from main.auth import initialize_auth
-from main.db import initialize_db
+from main.redis_db import redis_db
+from main.sqlite_db import sqlite_db
 
 @app.before_first_request
 def initialice_server():
 	initialize_auth()
-	initialize_db()
-
-
-
+	redis_db.connect();
+	sqlite_db.connect();
 

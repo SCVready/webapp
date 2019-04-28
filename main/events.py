@@ -5,7 +5,7 @@ from time import sleep
 import os, sys, socket, time, random, errno, functools, hashlib ,base64
 
 from .. import socketio
-from db import redis_con,initialize_db
+from redis_db import redis_db
 
 thread = None
 thread_lock = Lock()
@@ -20,11 +20,11 @@ def authenticated_only(f):
 	return wrapped
 
 def background_thread():
-	initialize_db()
-	redis_con.subscribe('liveview')
-	redis_con.subscribe('kinectalarm_event')
+	redis_db.connect()
+	redis_db.subscribe('liveview')
+	redis_db.subscribe('kinectalarm_event')
 	while True:
-		message = redis_con.get_message()
+		message = redis_db.get_message()
 		if message:
 			if message['channel'] == 'liveview':
 				socketio.emit('my event', {'frame': message['data']})
