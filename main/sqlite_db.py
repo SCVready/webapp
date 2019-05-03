@@ -9,7 +9,7 @@ class sqlite_database:
 		if not self.con:
 			self.con = sqlite3.connect('/etc/kinectalarm/detections.db')
 
-	def get_number_detecions(self):
+	def get_number_detections(self):
 		cur = self.con.cursor()
 		cur.execute('SELECT count(*) FROM detections')
 		return cur.fetchone()[0]

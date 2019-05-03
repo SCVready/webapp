@@ -68,7 +68,7 @@
         </div>
         <!-- Slider -->
         <div class="mb-4">
-	        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" onchange="updateSlider(this.value)">
+	        <input type="range" min="-60" max="60" value="{{tilt}}" class="slider" id="myRange" onchange="updateSlider(this.value)">
 	      </div>
 	      
       </div>
@@ -140,7 +140,7 @@ listen_to_liveview_frames();
 
 
 function updateSlider(slideAmount) {
-  console.log(slideAmount);;
+  $.post( "/api/change_tilt",{ tilt: slideAmount} );
 };
   
 </script>

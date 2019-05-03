@@ -23,7 +23,7 @@ def dashboard():
 def detection():
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
-	det_num    = int(sqlite_db.get_number_detecions())
+	det_num    = int(sqlite_db.get_number_detections())
 	detections = sqlite_db.get_detecions()
 
 	return render_template('detection.html',det_started=det_status,lvw_started=lvw_status,det_num = det_num,detections=detections)
@@ -38,8 +38,9 @@ def get_det_image(det_number,img_number):
 def liveview():
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
+	tilt = int(redis_db.get_var('tilt'))
 
-	return render_template('liveview.html',det_started=det_status,lvw_started=lvw_status)
+	return render_template('liveview.html',det_started=det_status,lvw_started=lvw_status,tilt=tilt)
 
 @login_required
 def options():

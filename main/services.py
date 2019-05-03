@@ -39,6 +39,12 @@ def api_lvw_status():
 		return 'ok'
 
 @login_required
+def api_change_tilt():
+	tilt = request.form['tilt']
+	redis_db.publish('kinectalarm','tilt {}'.format(tilt))
+	return 'ok'
+
+@login_required
 def change_password():
 	set_login_pass_hash(request.form['password'])
 	with open('/etc/gunicorn/password', 'w') as file:
@@ -56,5 +62,6 @@ def delete_detections():
 routes_services.add_url_rule('/request_login', 'request_login', request_login, methods=['POST'])
 routes_services.add_url_rule('/api/det_status', 'api_det_status', api_det_status, methods=['GET', 'POST'])
 routes_services.add_url_rule('/api/lvw_status', 'api_lvw_status', api_lvw_status, methods=['GET', 'POST'])
+routes_services.add_url_rule('/api/change_tilt', 'api_change_tilt', api_change_tilt, methods=['POST'])
 routes_services.add_url_rule('/api/delete_detections', 'api_delete_detections', delete_detections, methods=['POST'])
 routes_services.add_url_rule('/api/change_password', 'api_change_password', change_password, methods=['POST'])
