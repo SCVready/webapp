@@ -45,6 +45,18 @@ def api_change_tilt():
 	return 'ok'
 
 @login_required
+def api_change_brightness():
+	value = request.form['brightness']
+	redis_db.publish('kinectalarm','brightness {}'.format(value))
+	return 'ok'
+
+@login_required
+def api_change_contrast():
+	value = request.form['contrast']
+	redis_db.publish('kinectalarm','contrast {}'.format(value))
+	return 'ok'
+
+@login_required
 def change_password():
 	set_login_pass_hash(request.form['password'])
 	with open('/etc/gunicorn/password', 'w') as file:
@@ -58,10 +70,19 @@ def delete_detections():
 		redis_db.publish('kinectalarm','det rst')
 	return 'ok'
 
+@login_required
+def delete_detection():
+	value = request.form['delete_detection']
+	redis_db.publish('kinectalarm','det del {}'.format(value))
+	return 'ok'
+
 # Routes
 routes_services.add_url_rule('/request_login', 'request_login', request_login, methods=['POST'])
 routes_services.add_url_rule('/api/det_status', 'api_det_status', api_det_status, methods=['GET', 'POST'])
 routes_services.add_url_rule('/api/lvw_status', 'api_lvw_status', api_lvw_status, methods=['GET', 'POST'])
 routes_services.add_url_rule('/api/change_tilt', 'api_change_tilt', api_change_tilt, methods=['POST'])
+routes_services.add_url_rule('/api/change_brightness', 'api_change_brightness', api_change_brightness, methods=['POST'])
+routes_services.add_url_rule('/api/change_contrast', 'api_change_contrast', api_change_contrast, methods=['POST'])
 routes_services.add_url_rule('/api/delete_detections', 'api_delete_detections', delete_detections, methods=['POST'])
+routes_services.add_url_rule('/api/delete_detection', 'api_delete_detection', delete_detection, methods=['POST'])
 routes_services.add_url_rule('/api/change_password', 'api_change_password', change_password, methods=['POST'])

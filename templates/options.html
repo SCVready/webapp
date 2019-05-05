@@ -11,5 +11,53 @@
 
 <!-- Content Row -->
 {% block page_content %}
+<div class="row">
+  <div class="col-lg-6 mb-4">
+    <!-- Email options -->
+    <div class="card shadow mb-0">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Email options</h6>
+      </div>
+      <div class="card-body">
+        <div class="text-center">
+          <p class="mb-2">Data</p>
+          <p class="mb-2">Data</p>
+          <p class="mb-2">Data</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6 mb-4">
+    <!-- Detection options -->
+    <div class="card shadow mb-0">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Detection options</h6>
+      </div>
+      <div class="card-body">
+	      <h4 class="small font-weight-bold">Clear all detections</h4>
+	      <button onclick = "delete_captures();" class="mt-3 btn btn-sm btn-primary shadow-sm">Clear all detections</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
+
+{% block page_script %}
+<script type="text/javascript" charset="utf-8">
+
+  function delete_captures(){
+    $.post( "/api/delete_detections",{ delete_detections: "true"} ,function( data ){
+      if( data == 'ok'){
+          setTimeout(function() {window.location.reload(false); }, 500);
+        }
+      else{
+          console.log("ERROR");
+      }
+    });
+  };
+  
+</script>
+
+{% endblock %}
+

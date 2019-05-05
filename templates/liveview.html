@@ -52,31 +52,66 @@
     <!-- Approach -->
     <div class="card shadow mb-0">
       <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">Controls</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Kinect Controls</h6>
       </div>
       <div class="card-body">
+
+        <!-- Slider -->
+        <h4 class="small font-weight-bold">Tilt</h4>
+        <div class="mb-4">
+	        <input type="range" min="-60" max="60" value="{{tilt}}" class="slider" id="myRange" onchange="tilt_slider(this.value)">
+	      </div>
+      	
+        <!-- Slider -->
+        <h4 class="small font-weight-bold">Brightness</h4>  
+	      <div class="mb-4">
+	        <input type="range" min="-100" max="100" value="{{brightness}}" class="slider" id="myRange" onchange="brightness_slider(this.value)">
+	      </div>
+	      
+	      <!-- Slider -->
+        <h4 class="small font-weight-bold">Contrast</h4>  
+	      <div class="mb-0">
+	        <input type="range" min="-100" max="100" value="{{contrast}}" class="slider" id="myRange" onchange="contrast_slider(this.value)">
+	      </div>
+
+      </div>
+    </div>
+
+    <!-- Approach -->
+    <div class="card shadow mt-4 mb-0">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Controls2</h6>
+      </div>
+      <div class="card-body">
+      
         <!-- Button -->
+        <h4 class="small font-weight-bold">Button</h4>
         <div class="mb-4">
           <button id="test" class="btn btn-sm btn-primary shadow-sm" onclick = 'button_test();'>Test</button>
         </div>
+        
         <!-- switch -->
+        <h4 class="small font-weight-bold">Switch</h4>
         <div class="mb-4">
           <label class="switch">
             <input type="checkbox">
             <span class="slider_switch round"></span>
           </label>
         </div>
-        <!-- Slider -->
-        <div class="mb-4">
-	        <input type="range" min="-60" max="60" value="{{tilt}}" class="slider" id="myRange" onchange="updateSlider(this.value)">
-	      </div>
 	      
+        <!-- Slider -->
+        <h4 class="small font-weight-bold">Slider</h4>
+        <div class="mb-0">
+	        <input type="range" min="0" max="100" value="0" class="slider" id="myRange" onchange="function(this.value)">
+	      </div>
       </div>
     </div>
-
   </div>
-
+  
+  
+  
 </div>
+
 {% endblock %}
 
 
@@ -139,9 +174,17 @@
 listen_to_liveview_frames();
 
 
-function updateSlider(slideAmount) {
-  $.post( "/api/change_tilt",{ tilt: slideAmount} );
-};
+  function tilt_slider(slideAmount) {
+    $.post( "/api/change_tilt",{ tilt: slideAmount} );
+  };
+
+  function brightness_slider(slideAmount) {
+    $.post( "/api/change_brightness",{ brightness: slideAmount} );
+  };
+  
+  function contrast_slider(slideAmount) {
+    $.post( "/api/change_contrast",{ contrast: slideAmount} );
+  };
   
 </script>
 

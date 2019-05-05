@@ -39,8 +39,10 @@ def liveview():
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
 	tilt = int(redis_db.get_var('tilt'))
+	brightness = int(redis_db.get_var('brightness'))
+	contrast = int(redis_db.get_var('contrast'))
 
-	return render_template('liveview.html',det_started=det_status,lvw_started=lvw_status,tilt=tilt)
+	return render_template('liveview.html',det_started=det_status,lvw_started=lvw_status,tilt=tilt,brightness=brightness,contrast=contrast)
 
 @login_required
 def options():
