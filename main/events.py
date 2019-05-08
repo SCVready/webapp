@@ -30,7 +30,7 @@ def background_thread():
 				socketio.emit('my event', {'frame': message['data']})
 			if message['channel'] == 'kinectalarm_event':
 				socketio.emit('kinectalarm_event', {'frame': message['data']})
-		socketio.sleep(0.01)
+		socketio.sleep(0.1)
 
 @socketio.on('my event')
 @authenticated_only

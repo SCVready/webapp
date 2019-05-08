@@ -11,5 +11,33 @@
 
 <!-- Content Row -->
 {% block page_content %}
+<div class="row">
 
+  <div class="col-lg-4 col-12 mb-4">
+    <!-- System log -->
+    <div class="card shadow mb-0">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">System info</h6>
+      </div>
+      <div class="card-body">
+      
+        <h4 class="small font-weight-bold">CPU usage <span class="float-right">{{ cpu }}%</span></h4>
+        <div class="progress mb-4">
+          <div class="progress-bar bg-success" role="progressbar" style="width: {{ cpu }}%" aria-valuenow="{{ cpu }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        
+        <h4 class="small font-weight-bold">RAM usage <span class="float-right">{{ ram }}%</span></h4>
+        <div class="progress mb-4">
+          <div class="progress-bar bg-success" role="progressbar" style="width: {{ ram }}%" aria-valuenow="{{ ram }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        
+        <h4 class="small font-weight-bold">Disk usage <span class="float-right">{{ disk }}%</span></h4>
+        <div class="progress mb-4">
+          <div class="progress-bar bg-success" role="progressbar" style="width: {{ disk }}%" aria-valuenow="{{ disk }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
 {% endblock %}

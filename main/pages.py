@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, abort, redirect, url_for, Res
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 import common
+import psutil
+
 from auth import set_login_pass_hash,get_login_pass_hash
 from redis_db import redis_db
 from sqlite_db import sqlite_db
@@ -16,8 +18,10 @@ def index():
 def dashboard():
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
+	cpu = psutil.cpu_percent()
+	ram = psutil.virtual_memory()[2]
 
-	return render_template('dashboard.html',det_started=det_status,lvw_started=lvw_status)
+	return render_template('dashboard.html',det_started=det_status,lvw_started=lvw_status,cpu=cpu,ram=ram,disk=10)
 
 @login_required
 def detection():
