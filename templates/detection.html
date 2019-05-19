@@ -10,11 +10,11 @@
   <div class="col-7 col-sm-9">
     <div class="float-right">
       {% if det_started %}
-      <button id="btn_start" class="btn btn-sm btn-primary shadow-sm disabled" onclick = 'start_det();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start <span class="d-none d-sm-inline-block">Detection</span></button>
+      <button id="btn_start" class="btn btn-sm btn-primary shadow-sm" disabled onclick = 'start_det();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start <span class="d-none d-sm-inline-block">Detection</span></button>
       <button id="btn_stop" class="btn btn-sm btn-primary shadow-sm" onclick = 'stop_det();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop <span class="d-none d-sm-inline-block">Detection</span></button>
       {% else %}
       <button id="btn_start" class="btn btn-sm btn-primary shadow-sm" onclick = 'start_det();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start <span class="d-none d-sm-inline-block">Detection</span></button>
-      <button id="btn_stop" class="btn btn-sm btn-primary shadow-sm disabled" onclick = 'stop_det();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop <span class="d-none d-sm-inline-block">Detection</span></button>
+      <button id="btn_stop" class="btn btn-sm btn-primary shadow-sm" disabled onclick = 'stop_det();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop <span class="d-none d-sm-inline-block">Detection</span></button>
       {% endif %}
     </div>
   </div>
@@ -44,7 +44,7 @@
             <tbody>
             {% for det in detections %}
               <tr>
-                <td><button onclick = "show_capture({{ det[0] }});" class="btn btn-sm btn-primary shadow-sm">{{ det[1] }}</button></td>
+                <td><button onclick = "change_det({{ det[0] }},{{ det[2] }},{{ det[1] }});" class="btn btn-sm btn-primary shadow-sm">{{ det[1]|datetime }}</button></td>
                 <td>{{ det[2] }}</td>
                 <td>
                   <div class="text-right">
@@ -67,24 +67,30 @@
     <!-- Illustrations -->
     <div class="card shadow mb-0">
       <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">Capture</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Capture <span class="float-right"><span id="date_id"></span> Local Time</span></h6>
       </div>
       <div class="card-body">
         <div class="text-center">
-          {% if det_num > 0 %}
-          <img id="capture" class="img-fluid px-0 px-sm-0 mt-0 mb-4" style="width: 100%" src="detection/{{ (detections|last)[0] }}/2" alt="">
-          {% else %}
-          <img id="capture" class="img-fluid px-0 px-sm-0 mt-0 mb-4" style="width: 100%" src="images/placeholder.jpeg" alt="">
-          {% endif %}
-          <p class="mb-2">Data</p>
-          <p class="mb-2">Data</p>
-          <p class="mb-2">Data</p>
+            {% if det_num > 0 %}
+            <img id="capture" class="img-fluid px-0 px-sm-0 mt-0 mb-4" style="width: 100%" src="detection/{{ (detections|last)[0] }}/0" alt="">
+            {% else %}
+            <img id="capture" class="img-fluid px-0 px-sm-0 mt-0 mb-4" style="width: 100%" src="images/placeholder.jpeg" alt="">
+            {% endif %}
+            <div class="row">
+              <div class="col">
+                <button id="btn_previous" class="btn btn-sm btn-primary shadow-sm float-left"{% if det_num == 0 %} disabled {% endif %} onclick = "show_previous();"><i class="fas fa-angle-left fa-sm text-white-50"></i> Previous</button>
+              </div>
+              <div class="col">
+                <a id="btn_download" class="btn btn-sm btn-primary shadow-sm {% if det_num == 0 %} disabled {% endif %}" href="{% if det_num > 0 %}/detection_tar/{{(detections|last)[0]}}_capture.tar{% endif %}" download ><i class="fas fa-download fa-sm text-white-50"></i> Download</a>
+              </div>
+              <div class="col">
+                <button id="btn_next" class="btn btn-sm btn-primary shadow-sm float-right" {% if det_num == 0 %} disabled {% endif %} onclick = "show_next();">Next <i class="fas fa-angle-right fa-sm text-white-50"></i></button>
+              </div>
+            </div>
         </div>
       </div>
     </div>
-
   </div>
-
 </div>
 {% endblock %}
 
@@ -94,8 +100,8 @@
   function start_det(){
     $.post( "/api/det_status",{ det: "start"} ,function( data ){
       if( data == 'ok'){
-          $("#btn_start").addClass("disabled");
-          $("#btn_stop").removeClass("disabled");
+          $("#btn_start").prop("disabled", true);
+          $("#btn_stop").prop("disabled", false);
           $("#summary_det_status").removeClass("bg-primary").addClass("bg-warning");
         }
       else{
@@ -106,8 +112,8 @@
   function stop_det(){
     $.post( "/api/det_status",{ det: "stop"} ,function( data ){
       if( data == 'ok'){
-          $("#btn_start").removeClass("disabled");
-          $("#btn_stop").addClass("disabled");
+          $("#btn_start").prop("disabled", false);
+          $("#btn_stop").prop("disabled", true);
           $("#summary_det_status").removeClass("bg-warning").addClass("bg-primary");
         }
       else{
@@ -116,37 +122,103 @@
     });
   };
 
-  function show_capture(num_det) {
-    var img = document.getElementById("capture");
-    img.src = "detection/"+num_det+"/2";
+  {% if det_num > 0 %}
+  var current_det = {{ (detections|last)[0] }};
+  var current_frame = 0;
+  var current_tot_frames = {{ (detections|last)[2] }};
+  {% else %}
+  var current_det = -1;
+  var current_frame = -1;
+  var current_tot_frames = -1;
+  {% endif %}
+  
+  function show_capture(num_det,num_frame) {
+    if(num_det >= 0){
+      var img = document.getElementById("capture");
+      img.src = "detection/"+num_det+"/"+num_frame;
+      $("#btn_previous").prop("disabled", false);
+      $("#btn_download").removeClass("disabled");
+      $("#btn_next").prop("disabled", false);
+    }else{
+      var img = document.getElementById("capture");
+      img.src = "images/placeholder.jpeg";
+      $("#btn_previous").prop("disabled", true);
+      $("#btn_download").addClass("disabled");
+      $("#btn_next").prop("disabled", true);
+    }
   };
+  
+  function show_time(date) {
+    if(date >= 0){
+      var formattedDate = moment(date*1000).format('YYYY-MM-DD HH:mm:ss');
+      $("#date_id").html(formattedDate);
+    }else{
+      $("#date_id").html("");
+    }
+  };
+  
+  function change_det(num_det,num_frames,date) {
+    current_det = num_det;
+    current_frame = 0;
+    current_tot_frames = num_frames;
+    show_capture(current_det,current_frame);
+    show_time(date);
+    change_dowload(num_det);
+  };
+
+  function change_dowload(num_det) {
+    $("#btn_download").attr("href", "/detection_tar/"+num_det+"_capture.tar");
+  };
+  
+  function show_previous() {
+    if(current_det >= 0){
+      if (current_frame == 0){
+        current_frame = (current_tot_frames-1);
+        show_capture(current_det,current_frame);
+      }
+      else{
+        current_frame = current_frame -1;
+        show_capture(current_det,current_frame);
+      }
+    }
+  };
+  
+  function show_next() {
+    if(current_det >= 0){
+      if (current_frame == (current_tot_frames-1)){
+        current_frame = 0;
+        show_capture(current_det,current_frame);
+      }
+      else{
+        current_frame = current_frame +1;
+        show_capture(current_det,current_frame);
+      }
+    }
+  };
+  
 
   function delete_detection(button,id) {
     $.post( "/api/delete_detection",{ delete_detection: id} );
-    det_table.row(button.parentNode.parentNode).remove().draw(false);
+    change_det(-1,-1,-1);
   };
   
   function update_detection_table() {
 
-    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/events');
 
-    socketio.on('connect', function() {
-      socketio.emit('my event', {data: 'I\'m connected!'});
-    });
-    
     socketio.on('kinectalarm_event', function(data) {
-      var event_words = data.frame.split(' ');
+      var event_words = data.event.split(' ');
       var num_event_words = event_words.length;
       
-      if(num_event_words == 3){
+      if(num_event_words == 4){
         if(event_words[0] == 'newdet'){
           setTimeout(function() {
             det_table.row.add( [
-              '<button onclick = "show_capture('+event_words[1]+');" class="btn btn-sm btn-primary shadow-sm">'+event_words[2]+'</button>',
-              '5',
+              '<button onclick = "change_det('+event_words[1]+','+event_words[3]+','+event_words[2]+');" class="btn btn-sm btn-primary shadow-sm">'+moment(event_words[2]*1000).utc().format('YYYY-MM-DD HH:mm:ss UTC')+'</button>',
+              event_words[3],
               '<div class="text-right"><button class="btn btn-light btn-circle btn-sm" onclick = "delete_detection(this,'+event_words[1]+');"><i class="fas fa-times"></i></button></div>',
               ] ).draw( false );
-            show_capture(event_words[1]);
+            change_det(event_words[1],event_words[3],event_words[2]);
           }, 2000);
         }
       }

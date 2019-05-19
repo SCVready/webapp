@@ -12,22 +12,41 @@
 <!-- Content Row -->
 {% block page_content %}
 <div class="row">
-  <div class="col-lg-6 mb-4">
+  <div class="col-lg-6 mb-2">
     <!-- Email options -->
     <div class="card shadow mb-0">
       <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">Email options</h6>
       </div>
       <div class="card-body">
-        <div class="text-center">
-          <p class="mb-2">Data</p>
-          <p class="mb-2">Data</p>
-          <p class="mb-2">Data</p>
-        </div>
+          <!-- switch -->
+          
+          <h4 class="small font-weight-bold">Activate</h4>
+          <div class="mb-4">
+            <label class="switch">
+              <input type="checkbox">
+              <span class="slider_switch round"></span>
+            </label>
+          </div>
+          
+          <div class="form-group">
+            <h4 class="small font-weight-bold">Sender email account</h4>
+            <input class="form-control form-control-user mb-2" id="" value="">
+            <h4 class="small font-weight-bold">Sender email password</h4>
+            <input class="form-control form-control-user mb-2" id="" value="">
+            <h4 class="small font-weight-bold">Destination email account</h4>
+            <input class="form-control form-control-user mb-2" id="" value="">
+          </div>
+          <button class="btn btn-primary btn-user btn-block mb-2" onclick = 'submit_det_controls();'>Submit</button>
+        
+          <div class="dropdown-divider mt-4 mb-4"></div>
+          <!-- Button -->
+          <h4 class="small font-weight-bold">Send test email</h4>
+          <button class="btn btn-primary btn-user btn-block mb-2" onclick = 'submit_det_controls();'>Send</button>
       </div>
     </div>
   </div>
-  <div class="col-lg-6 mb-4">
+  <div class="col-lg-6 mb-2">
     <!-- Detection options -->
     <div class="card shadow mb-0">
       <div class="card-header py-2">
@@ -35,10 +54,30 @@
       </div>
       <div class="card-body">
 	      <h4 class="small font-weight-bold">Clear all detections</h4>
-	      <button onclick = "delete_captures();" class="mt-3 btn btn-sm btn-primary shadow-sm">Clear all detections</button>
+	      <button onclick = "delete_captures();" class="btn btn-primary btn-user btn-block mb-2">Clear all detections</button>
       </div>
     </div>
   </div>
+
+  <div class="col-lg-6 mb-2">
+      <!-- Approach -->
+    <div class="card shadow mt-4 mb-0">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Detection controls</h6>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <h4 class="small font-weight-bold">Threshold</h4>
+          <input class="form-control form-control-user mb-2" id="field_threshold" value="{{threshold}}">
+          <h4 class="small font-weight-bold">Sensitivity</h4>
+          <input class="form-control form-control-user mb-2" id="field_sensitivity" value="{{sensitivity}}">
+        </div>
+        <button class="btn btn-primary btn-user btn-block" onclick = 'submit_det_controls();'>Submit</button>
+        
+      </div>
+    </div>
+  </div>
+
 </div>
 
 {% endblock %}
@@ -55,6 +94,14 @@
           console.log("ERROR");
       }
     });
+  };
+  
+  function submit_det_controls(){
+    var threshold = document.getElementById('field_threshold').value;
+    var sensitivity = document.getElementById('field_sensitivity').value;
+    
+    $.post( "/api/change_threshold",{ threshold: threshold});
+    $.post( "/api/change_sensitivity",{ sensitivity: sensitivity});
   };
   
 </script>

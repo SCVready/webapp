@@ -25,25 +25,19 @@ def background_thread():
 	redis_db.subscribe('kinectalarm_event')
 	while True:
 		message = redis_db.get_message()
-		if message:
+		if message and message['type'] == 'pmessage':
 			if message['channel'] == 'liveview':
-				socketio.emit('my event', {'frame': message['data']})
+				socketio.emit('liveview', {'frame': message['data']}, namespace='/liveview')
 			if message['channel'] == 'kinectalarm_event':
-				socketio.emit('kinectalarm_event', {'frame': message['data']})
-		socketio.sleep(0.1)
+				socketio.emit('kinectalarm_event', {'event': message['data']}, namespace='/events')
+		socketio.sleep(0.05)
 
-@socketio.on('my event')
+@socketio.on('connect', namespace='/liveview')
 @authenticated_only
-def connect(json):
-	global thread
-	with thread_lock:
-		if thread is None:
-			thread = socketio.start_background_task(background_thread)
+def connect():
+	print("liveview")
 
-@socketio.on('kinectalarm_event')
+@socketio.on('connect', namespace='/events')
 @authenticated_only
-def connect(json):
-	global thread
-	with thread_lock:
-		if thread is None:
-			thread = socketio.start_background_task(background_thread)
+def connect():
+	print("events")

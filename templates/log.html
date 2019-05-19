@@ -12,41 +12,20 @@
 <!-- Content Row -->
 {% block page_content %}
 <div class="row">
-  <div class="col-lg-4 col-12 mb-4">
+  <div class="col-12 mb-4">
     <!-- Kinectalarm log -->
     <div class="card shadow mb-0">
       <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">Kinectalarm log</h6>
+        <h6 class="m-0 font-weight-bold text-primary">System Syslog</h6>
       </div>
-      <div class="card-body">
-        <p class="mb-2">Data</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-lg-4 col-12 mb-4">
-    <!-- Flask log -->
-    <div class="card shadow mb-0">
-      <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">Flask log</h6>
-      </div>
-      <div class="card-body">
-        <p class="mb-2">Data</p>
+      <div class="card-body pr-1">
+        <div id="" style="height:500px; overflow-y:scroll">
+          {% for log in log_text|reverse %}
+          <p>{{log}}</p>
+          {% endfor %}
+        </div>
       </div>
     </div>
   </div>
-  
-  <div class="col-lg-4 col-12 mb-4">
-    <!-- System log -->
-    <div class="card shadow mb-0">
-      <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">System log</h6>
-      </div>
-      <div class="card-body">
-        <p class="mb-2">Data</p>
-      </div>
-    </div>
-  </div>
-  
 </div>
 {% endblock %}

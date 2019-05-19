@@ -25,7 +25,8 @@ def page_not_found(e):
 
 # SOCKETIO CONF
 socketio = SocketIO(app, async_mode=async_mode, manage_session=False)
-import main.events
+from main.events import background_thread
+socketio.start_background_task(background_thread)
 
 # Component initialization
 from main.auth import initialize_auth
@@ -37,4 +38,15 @@ def initialice_server():
 	initialize_auth()
 	redis_db.connect();
 	sqlite_db.connect();
+
+# JINJA FILTERS
+from datetime import datetime
+def format_datetime(value):
+    ts = int(value)
+    return datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S UTC')
+
+app.jinja_env.filters['datetime'] = format_datetime
+
+
+app.jinja_env.filters['datetime'] = format_datetime
 

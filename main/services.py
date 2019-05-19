@@ -57,6 +57,18 @@ def api_change_contrast():
 	return 'ok'
 
 @login_required
+def api_change_threshold():
+	value = request.form['threshold']
+	redis_db.publish('kinectalarm','threshold {}'.format(value))
+	return 'ok'
+
+@login_required
+def api_change_sensitivity():
+	value = request.form['sensitivity']
+	redis_db.publish('kinectalarm','sensitivity {}'.format(value))
+	return 'ok'
+
+@login_required
 def change_password():
 	set_login_pass_hash(request.form['password'])
 	with open('/etc/gunicorn/password', 'w') as file:
@@ -83,6 +95,8 @@ routes_services.add_url_rule('/api/lvw_status', 'api_lvw_status', api_lvw_status
 routes_services.add_url_rule('/api/change_tilt', 'api_change_tilt', api_change_tilt, methods=['POST'])
 routes_services.add_url_rule('/api/change_brightness', 'api_change_brightness', api_change_brightness, methods=['POST'])
 routes_services.add_url_rule('/api/change_contrast', 'api_change_contrast', api_change_contrast, methods=['POST'])
+routes_services.add_url_rule('/api/change_threshold', 'api_change_threshold', api_change_threshold, methods=['POST'])
+routes_services.add_url_rule('/api/change_sensitivity', 'api_change_sensitivity', api_change_sensitivity, methods=['POST'])
 routes_services.add_url_rule('/api/delete_detections', 'api_delete_detections', delete_detections, methods=['POST'])
 routes_services.add_url_rule('/api/delete_detection', 'api_delete_detection', delete_detection, methods=['POST'])
 routes_services.add_url_rule('/api/change_password', 'api_change_password', change_password, methods=['POST'])

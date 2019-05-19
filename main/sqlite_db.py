@@ -19,9 +19,14 @@ class sqlite_database:
 		cur.execute('SELECT * FROM detections')
 		return cur.fetchall()
 
-	def get_detecions_filename(self,number):
+	def get_detecion_img(self,number):
 		cur = self.con.cursor()
-		cur.execute('SELECT FILENAME FROM detections WHERE id={}'.format(number))
+		cur.execute('SELECT FILENAME_IMG FROM detections WHERE id={}'.format(number))
+		return cur.fetchone()[0]
+
+	def get_detecion_vid(self,number):
+		cur = self.con.cursor()
+		cur.execute('SELECT FILENAME_VID FROM detections WHERE id={}'.format(number))
 		return cur.fetchone()[0]
 
 sqlite_db = sqlite_database()

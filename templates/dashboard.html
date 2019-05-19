@@ -23,17 +23,59 @@
       
         <h4 class="small font-weight-bold">CPU usage <span class="float-right">{{ cpu }}%</span></h4>
         <div class="progress mb-4">
-          <div class="progress-bar bg-success" role="progressbar" style="width: {{ cpu }}%" aria-valuenow="{{ cpu }}" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="progress-bar {% if cpu > 90 %}bg-danger{% elif cpu > 80 %}bg-warning{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ cpu }}%" aria-valuenow="{{ cpu }}" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         
         <h4 class="small font-weight-bold">RAM usage <span class="float-right">{{ ram }}%</span></h4>
         <div class="progress mb-4">
-          <div class="progress-bar bg-success" role="progressbar" style="width: {{ ram }}%" aria-valuenow="{{ ram }}" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="progress-bar {% if ram > 90 %}bg-danger{% elif ram > 80 %}bg-warning{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ ram }}%" aria-valuenow="{{ ram }}" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         
-        <h4 class="small font-weight-bold">Disk usage <span class="float-right">{{ disk }}%</span></h4>
+        <h4 class="small font-weight-bold">Disk usage <span class="float-right">{{'%0.1f'| format(disk|float)}}%</span></h4>
         <div class="progress mb-4">
-          <div class="progress-bar bg-success" role="progressbar" style="width: {{ disk }}%" aria-valuenow="{{ disk }}" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="progress-bar {% if disk > 90 %}bg-danger{% elif disk > 80 %}bg-warning{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ disk }}%" aria-valuenow="{{ disk }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 col-12 mb-4">
+    <!-- System log -->
+    <div class="card shadow mb-0">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Intrusion Summary</h6>
+      </div>
+      <div class="card-body">
+        <div class="row no-gutters align-items-center">
+          <div class="col mr-2">
+            <div>
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Intrusions</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_intrusions }}</div>
+            </div>
+          </div>
+          <div class="col-auto">
+            <i class="fas fa-crosshairs fa-4x text-gray-300"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 col-12 mb-4">
+    <!-- System log -->
+    <div class="card shadow mb-0">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">System version</h6>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <h4 class="small font-weight-bold">PresenceOS <span class="float-right">{{ presenceos_version }}</span></h4>
+        </div>
+        <div class="mb-3">
+          <h4 class="small font-weight-bold">Kinectalarm <span class="float-right">{{ kinectalarm_version }}</span></h4>
+        </div>
+        <div class="mb-0">
+          <h4 class="small font-weight-bold">Webapp <span class="float-right">{{ webapp_version }}</span></h4>
         </div>
       </div>
     </div>

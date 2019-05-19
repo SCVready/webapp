@@ -3,6 +3,8 @@ from flask_login import LoginManager, UserMixin, login_required, login_user, log
 
 import common
 import psutil
+import shutil
+import os
 
 from auth import set_login_pass_hash,get_login_pass_hash
 from redis_db import redis_db
@@ -18,10 +20,16 @@ def index():
 def dashboard():
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
+	det_num    = int(sqlite_db.get_number_detections())
 	cpu = psutil.cpu_percent()
 	ram = psutil.virtual_memory()[2]
-
-	return render_template('dashboard.html',det_started=det_status,lvw_started=lvw_status,cpu=cpu,ram=ram,disk=10)
+	
+	stats = os.statvfs('/')
+	total = stats.f_frsize * stats.f_blocks
+        free = stats.f_frsize * stats.f_bavail
+	used = total - free
+	used_percentage = float(used)/float(total)*100
+	return render_template('dashboard.html',det_started=det_status,lvw_started=lvw_status,cpu=cpu,ram=ram,disk=used_percentage,new_intrusions=0,total_intrusions=det_num,presenceos_version='0.0',kinectalarm_version='0.0',webapp_version='0.0')
 
 @login_required
 def detection():
@@ -34,9 +42,18 @@ def detection():
 
 @login_required
 def get_det_image(det_number,img_number):
-	filename = sqlite_db.get_detecions_filename(det_number)
+	filename = '/var/detections/{}_capture_{}.jpeg'.format(det_number,img_number)
 	return send_file(filename, mimetype='image/png', add_etags=False, cache_timeout=0)
 
+@login_required
+def get_det_video(det_number):
+	filename = sqlite_db.get_detecion_vid(det_number)
+	return send_file(filename, mimetype='video/mp4', add_etags=False, cache_timeout=0)
+
+@login_required
+def get_det_tar(det_number):
+	filename = sqlite_db.get_detecion_img(det_number)
+	return send_file(filename, mimetype='application/tar', add_etags=False, cache_timeout=0)
 
 @login_required
 def liveview():
@@ -52,15 +69,22 @@ def liveview():
 def options():
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
-	
-	return render_template('options.html',det_started=det_status,lvw_started=lvw_status)
+	threshold = int(redis_db.get_var('threshold'))
+	sensitivity = int(redis_db.get_var('sensitivity'))
+	return render_template('options.html',det_started=det_status,lvw_started=lvw_status,threshold=threshold,sensitivity=sensitivity)
 
 @login_required
 def log():
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
+	log_text = tuple()
+	with open('/var/log/messages', 'r') as fp:
+		line = fp.readline()
+		while line:
+			line = fp.readline()
+			log_text = log_text + (line.strip().decode('utf-8'),)
 
-	return render_template('log.html',det_started=det_status,lvw_started=lvw_status)
+	return render_template('log.html',det_started=det_status,lvw_started=lvw_status,log_text=log_text)
 
 def login():
 	return render_template('login.html')
@@ -81,5 +105,6 @@ routes_pages.add_url_rule('/liveview', 'liveview', liveview, methods=['GET', 'PO
 routes_pages.add_url_rule('/options', 'options', options, methods=['GET'])
 routes_pages.add_url_rule('/log', 'log', log, methods=['GET'])
 routes_pages.add_url_rule('/detection/<det_number>/<img_number>', 'get_det_image', get_det_image, methods=['GET'])
-
+routes_pages.add_url_rule('/detection_tar/<det_number>_capture.tar', 'get_det_tar', get_det_tar, methods=['GET'])
+routes_pages.add_url_rule('/detection_vid/<det_number>', 'get_det_video', get_det_video, methods=['GET'])
 

@@ -16,11 +16,11 @@
   <div class="col-7 col-sm-9">
     <div class="float-right">
       {% if lvw_started %}
-      <button id="btn_start" class="btn btn-sm btn-primary shadow-sm disabled" onclick = 'start_lvw();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start <span class="d-none d-sm-inline-block">LiveView</span></button>
+      <button id="btn_start" class="btn btn-sm btn-primary shadow-sm" disabled onclick = 'start_lvw();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start <span class="d-none d-sm-inline-block">LiveView</span></button>
       <button id="btn_stop" class="btn btn-sm btn-primary shadow-sm" onclick = 'stop_lvw();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop <span class="d-none d-sm-inline-block">LiveView</span></button>
       {% else %}
       <button id="btn_start" class="btn btn-sm btn-primary shadow-sm" onclick = 'start_lvw();'><i class="fas fa-bolt fa-sm text-white-50"></i> Start <span class="d-none d-sm-inline-block">LiveView</span></button>
-      <button id="btn_stop" class="btn btn-sm btn-primary shadow-sm disabled" onclick = 'stop_lvw();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop <span class="d-none d-sm-inline-block">LiveView</span></button>
+      <button id="btn_stop" class="btn btn-sm btn-primary shadow-sm" disabled onclick = 'stop_lvw();'><i class="fas fa-power-off fa-sm text-white-50"></i> Stop <span class="d-none d-sm-inline-block">LiveView</span></button>
       {% endif %}
     </div>
   </div>
@@ -65,7 +65,7 @@
         <!-- Slider -->
         <h4 class="small font-weight-bold">Brightness</h4>  
 	      <div class="mb-4">
-	        <input type="range" min="-100" max="100" value="{{brightness}}" class="slider" id="myRange" onchange="brightness_slider(this.value)">
+	        <input type="range" min="-100" max="200" value="{{brightness}}" class="slider" id="myRange" onchange="brightness_slider(this.value)">
 	      </div>
 	      
 	      <!-- Slider -->
@@ -77,39 +77,7 @@
       </div>
     </div>
 
-    <!-- Approach -->
-    <div class="card shadow mt-4 mb-0">
-      <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">Controls2</h6>
-      </div>
-      <div class="card-body">
-      
-        <!-- Button -->
-        <h4 class="small font-weight-bold">Button</h4>
-        <div class="mb-4">
-          <button id="test" class="btn btn-sm btn-primary shadow-sm" onclick = 'button_test();'>Test</button>
-        </div>
-        
-        <!-- switch -->
-        <h4 class="small font-weight-bold">Switch</h4>
-        <div class="mb-4">
-          <label class="switch">
-            <input type="checkbox">
-            <span class="slider_switch round"></span>
-          </label>
-        </div>
-	      
-        <!-- Slider -->
-        <h4 class="small font-weight-bold">Slider</h4>
-        <div class="mb-0">
-	        <input type="range" min="0" max="100" value="0" class="slider" id="myRange" onchange="function(this.value)">
-	      </div>
-      </div>
-    </div>
   </div>
-  
-  
-  
 </div>
 
 {% endblock %}
@@ -121,8 +89,8 @@
   function start_lvw(){
     $.post( "/api/lvw_status",{ lvw: "start"} ,function( data ){
       if( data == 'ok'){
-          $("#btn_start").addClass("disabled");
-          $("#btn_stop").removeClass("disabled");
+          $("#btn_start").prop("disabled", true);
+          $("#btn_stop").prop("disabled", false);
           $("#summary_lvw_status").removeClass("bg-primary").addClass("bg-warning");
           lvw_is_started = true;
         }
@@ -135,8 +103,8 @@
   function stop_lvw(){
     $.post( "/api/lvw_status",{ lvw: "stop"} ,function( data ){
       if( data == 'ok'){
-          $("#btn_start").removeClass("disabled");
-          $("#btn_stop").addClass("disabled");
+          $("#btn_start").prop("disabled", false);
+          $("#btn_stop").prop("disabled", true);
           $("#summary_lvw_status").removeClass("bg-warning").addClass("bg-primary");
           var img = document.getElementById("liveview_img");
           img.src = "images/placeholder.jpeg";
@@ -150,13 +118,9 @@
 
   function listen_to_liveview_frames() {
 
-    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-
-    socketio.on('connect', function() {
-	    socketio.emit('my event', {data: 'I\'m connected!'});
-    });
+    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/liveview');
     
-    socketio.on('my event', function(data) {
+    socketio.on('liveview', function(data) {
 	    var img = document.getElementById("liveview_img");
       if(lvw_is_started){
 	    img.src = 'data:image/jpg;base64,' + data.frame;}
