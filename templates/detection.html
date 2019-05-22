@@ -204,22 +204,20 @@
   
   function update_detection_table() {
 
-    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/events');
+    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/detections');
 
-    socketio.on('kinectalarm_event', function(data) {
+    socketio.on('newdet', function(data) {
       var event_words = data.event.split(' ');
       var num_event_words = event_words.length;
       
       if(num_event_words == 4){
         if(event_words[0] == 'newdet'){
-          setTimeout(function() {
             det_table.row.add( [
               '<button onclick = "change_det('+event_words[1]+','+event_words[3]+','+event_words[2]+');" class="btn btn-sm btn-primary shadow-sm">'+moment(event_words[2]*1000).utc().format('YYYY-MM-DD HH:mm:ss UTC')+'</button>',
               event_words[3],
               '<div class="text-right"><button class="btn btn-light btn-circle btn-sm" onclick = "delete_detection(this,'+event_words[1]+');"><i class="fas fa-times"></i></button></div>',
               ] ).draw( false );
             change_det(event_words[1],event_words[3],event_words[2]);
-          }, 2000);
         }
       }
     });

@@ -21,19 +21,19 @@
       </div>
       <div class="card-body">
       
-        <h4 class="small font-weight-bold">CPU usage <span class="float-right">{{ cpu }}%</span></h4>
+        <h4 class="small font-weight-bold">CPU usage <span id="cpu_num" class="float-right">{{ cpu }}%</span></h4>
         <div class="progress mb-4">
-          <div class="progress-bar {% if cpu > 90 %}bg-danger{% elif cpu > 80 %}bg-warning{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ cpu }}%" aria-valuenow="{{ cpu }}" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="progress-bar {% if cpu > 90 %}bg-danger{% elif cpu > 80 %}bg-warning{% else %}bg-success{% endif %}" id="cpu" role="progressbar" style="width: {{ cpu }}%" aria-valuenow="{{ cpu }}" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         
-        <h4 class="small font-weight-bold">RAM usage <span class="float-right">{{ ram }}%</span></h4>
+        <h4 class="small font-weight-bold">RAM usage <span id="ram_num" class="float-right">{{ ram }}%</span></h4>
         <div class="progress mb-4">
-          <div class="progress-bar {% if ram > 90 %}bg-danger{% elif ram > 80 %}bg-warning{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ ram }}%" aria-valuenow="{{ ram }}" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="progress-bar {% if ram > 90 %}bg-danger{% elif ram > 80 %}bg-warning{% else %}bg-success{% endif %}" id="ram" role="progressbar" style="width: {{ ram }}%" aria-valuenow="{{ ram }}" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         
-        <h4 class="small font-weight-bold">Disk usage <span class="float-right">{{'%0.1f'| format(disk|float)}}%</span></h4>
+        <h4 class="small font-weight-bold">Disk usage <span id="disk_num" class="float-right">{{'%0.1f'| format(disk|float)}}%</span></h4>
         <div class="progress mb-4">
-          <div class="progress-bar {% if disk > 90 %}bg-danger{% elif disk > 80 %}bg-warning{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ disk }}%" aria-valuenow="{{ disk }}" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="progress-bar {% if disk > 90 %}bg-danger{% elif disk > 80 %}bg-warning{% else %}bg-success{% endif %}" id="disk" role="progressbar" style="width: {{ disk }}%" aria-valuenow="{{ disk }}" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
       </div>
     </div>
@@ -83,3 +83,40 @@
   
 </div>
 {% endblock %}
+
+{% block page_script %}
+
+<script type="text/javascript" charset="utf-8">
+  
+    function listes_to_events() {
+
+      var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/system_info');
+      
+      socketio.on('system_info', function(data) {
+	$("#cpu").css('width', data.cpu+'%');
+	$("#cpu_num").text(data.cpu.toFixed(1)+'%');
+	if(data.cpu>90){$("#cpu").removeClass("bg-success").removeClass("bg-warning").addClass("bg-danger")}
+	else if(data.cpu>80){$("#cpu").removeClass("bg-danger").removeClass("bg-success").addClass("bg-warning")}
+	else{$("#cpu").removeClass("bg-danger").removeClass("bg-warning").addClass("bg-success")}
+
+	$("#ram").css('width', data.ram+'%');
+	$("#ram_num").text(data.ram.toFixed(1)+'%');
+	if(data.ram>90){$("#ram").removeClass("bg-success").removeClass("bg-warning").addClass("bg-danger")}
+	else if(data.ram>80){$("#ram").removeClass("bg-danger").removeClass("bg-success").addClass("bg-warning")}
+	else{$("#ram").removeClass("bg-danger").removeClass("bg-warning").addClass("bg-success")}
+
+	$("#disk").css('width', data.disk+'%');
+	$("#disk_num").text(data.disk.toFixed(1)+'%');
+	if(data.disk>90){$("#disk").removeClass("bg-success").removeClass("bg-warning").addClass("bg-danger")}
+	else if(data.disk>80){$("#disk").removeClass("bg-danger").removeClass("bg-success").addClass("bg-warning")}
+	else{$("#disk").removeClass("bg-danger").removeClass("bg-warning").addClass("bg-success")}
+
+      });
+    };
+
+    listes_to_events();
+  
+  </script>
+
+{% endblock %}
+

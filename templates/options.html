@@ -12,9 +12,9 @@
 <!-- Content Row -->
 {% block page_content %}
 <div class="row">
-  <div class="col-lg-6 mb-2">
+  <div class="col-lg-6 mb-4">
     <!-- Email options -->
-    <div class="card shadow mb-0">
+    <div class="card shadow mb-2">
       <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">Email options</h6>
       </div>
@@ -22,33 +22,37 @@
           <!-- switch -->
           
           <h4 class="small font-weight-bold">Activate</h4>
-          <div class="mb-4">
+          <div class="mb-2">
             <label class="switch">
-              <input type="checkbox">
+              <input type="checkbox" name="activate_email" {% if send_email_activate %}checked{% endif %}>
               <span class="slider_switch round"></span>
             </label>
           </div>
           
           <div class="form-group">
             <h4 class="small font-weight-bold">Sender email account</h4>
-            <input class="form-control form-control-user mb-2" id="" value="">
+            <input class="form-control form-control-user mb-2" id="email_from" value="{{email_from}}">
             <h4 class="small font-weight-bold">Sender email password</h4>
-            <input class="form-control form-control-user mb-2" id="" value="">
+            <input class="form-control form-control-user mb-2" id="password" type="password" value="{{password}}">
             <h4 class="small font-weight-bold">Destination email account</h4>
-            <input class="form-control form-control-user mb-2" id="" value="">
+            <input class="form-control form-control-user mb-2" id="email_to" value="{{email_to}}">
+            <h4 class="small font-weight-bold">Email Server URL</h4>
+            <input class="form-control form-control-user mb-2" id="smtp_server_url" value="{{smtp_server_url}}">
+            <h4 class="small font-weight-bold">Email Server port</h4>
+            <input class="form-control form-control-user mb-2" id="smtp_server_port" value="{{smtp_server_port}}">
           </div>
-          <button class="btn btn-primary btn-user btn-block mb-2" onclick = 'submit_det_controls();'>Submit</button>
+          <button class="btn btn-primary btn-user btn-block mb-2" onclick = 'submit_email_data();'>Submit</button>
         
           <div class="dropdown-divider mt-4 mb-4"></div>
           <!-- Button -->
           <h4 class="small font-weight-bold">Send test email</h4>
-          <button class="btn btn-primary btn-user btn-block mb-2" onclick = 'submit_det_controls();'>Send</button>
+          <button class="btn btn-primary btn-user btn-block mb-2" onclick = 'request_email_test();'>Send</button>
       </div>
     </div>
   </div>
-  <div class="col-lg-6 mb-2">
+  <div class="col-lg-6 mb-4">
     <!-- Detection options -->
-    <div class="card shadow mb-0">
+    <div class="card shadow mb-2">
       <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">Detection options</h6>
       </div>
@@ -59,9 +63,9 @@
     </div>
   </div>
 
-  <div class="col-lg-6 mb-2">
+  <div class="col-lg-6 mb-4">
       <!-- Approach -->
-    <div class="card shadow mt-4 mb-0">
+    <div class="card shadow mb-2">
       <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">Detection controls</h6>
       </div>
@@ -86,14 +90,7 @@
 <script type="text/javascript" charset="utf-8">
 
   function delete_captures(){
-    $.post( "/api/delete_detections",{ delete_detections: "true"} ,function( data ){
-      if( data == 'ok'){
-          setTimeout(function() {window.location.reload(false); }, 500);
-        }
-      else{
-          console.log("ERROR");
-      }
-    });
+    $.post( "/api/delete_detections",{ delete_detections: "true"});
   };
   
   function submit_det_controls(){
@@ -104,6 +101,28 @@
     $.post( "/api/change_sensitivity",{ sensitivity: sensitivity});
   };
   
+  function submit_email_data(){
+    var email_from = document.getElementById('email_from').value;
+    var password = document.getElementById('password').value;
+    var email_to = document.getElementById('email_to').value;
+    var smtp_server_url = document.getElementById('smtp_server_url').value;
+    var smtp_server_port = document.getElementById('smtp_server_port').value;
+    
+    $.post( "/api/change_email_data",{ email_from:email_from,password:password,email_to:email_to,smtp_server_url:smtp_server_url,smtp_server_port:smtp_server_port});
+  };
+
+  function request_email_test(){
+    $.post( "/api/send_email_test",{ email_test: 'true'});
+  };
+
+  $('input[name=activate_email]').change(function(){
+    if($('input[name=activate_email]').is(':checked')){
+      $.post( "/api/send_email_activate",{ activate: '1'});
+    } else {
+      $.post( "/api/send_email_activate",{ activate: '0'});
+    }
+  });
+
 </script>
 
 {% endblock %}

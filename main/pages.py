@@ -67,11 +67,21 @@ def liveview():
 
 @login_required
 def options():
-	det_status = int(redis_db.get_var('det_status'))
-	lvw_status = int(redis_db.get_var('lvw_status'))
-	threshold = int(redis_db.get_var('threshold'))
+	det_status  = int(redis_db.get_var('det_status'))
+	lvw_status  = int(redis_db.get_var('lvw_status'))
+	threshold   = int(redis_db.get_var('threshold'))
 	sensitivity = int(redis_db.get_var('sensitivity'))
-	return render_template('options.html',det_started=det_status,lvw_started=lvw_status,threshold=threshold,sensitivity=sensitivity)
+
+	email_from       = redis_db.get_var('email_from')
+	password         = redis_db.get_var('password')
+	email_to         = redis_db.get_var('email_to')
+	smtp_server_url  = redis_db.get_var('smtp_server_url')
+	smtp_server_port = int(redis_db.get_var('smtp_server_port'))
+	send_email_activate = int(redis_db.get_var('send_email_activate'))
+
+	return render_template('options.html', det_started=det_status, lvw_started=lvw_status, threshold=threshold, sensitivity=sensitivity, 
+		email_from=email_from, password=password, email_to=email_to, smtp_server_url=smtp_server_url ,
+		smtp_server_port=smtp_server_port, send_email_activate=send_email_activate)
 
 @login_required
 def log():

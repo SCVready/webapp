@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, abort, redirect, url_for, Response, g, send_file, Blueprint
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
+import json
 
 import common
 from auth import User,get_login_pass_hash,set_login_pass_hash
@@ -69,6 +70,35 @@ def api_change_sensitivity():
 	return 'ok'
 
 @login_required
+def api_change_email_data():
+	email_from = request.form['email_from']
+	password = request.form['password']
+	email_to = request.form['email_to']
+	smtp_server_url = request.form['smtp_server_url']
+	smtp_server_port = request.form['smtp_server_port']
+	data = {
+		"email_from": email_from,
+		"password": password,
+		"email_to": email_to,
+		"smtp_server_url": smtp_server_url,
+		"smtp_server_port": smtp_server_port}
+
+	redis_db.publish('email_change_data','{}'.format(json.dumps(data)))
+	return 'ok'
+
+@login_required
+def api_send_email_activate():
+	activate = request.form['activate']
+	redis_db.publish('email_activate',activate)
+	return 'ok'
+
+@login_required
+def api_send_email_test():
+	if request.form['email_test'] == 'true':
+		redis_db.publish('email_send_test','')
+	return 'ok'
+
+@login_required
 def change_password():
 	set_login_pass_hash(request.form['password'])
 	with open('/etc/gunicorn/password', 'w') as file:
@@ -99,4 +129,7 @@ routes_services.add_url_rule('/api/change_threshold', 'api_change_threshold', ap
 routes_services.add_url_rule('/api/change_sensitivity', 'api_change_sensitivity', api_change_sensitivity, methods=['POST'])
 routes_services.add_url_rule('/api/delete_detections', 'api_delete_detections', delete_detections, methods=['POST'])
 routes_services.add_url_rule('/api/delete_detection', 'api_delete_detection', delete_detection, methods=['POST'])
+routes_services.add_url_rule('/api/change_email_data', 'api_change_email_data', api_change_email_data, methods=['POST'])
+routes_services.add_url_rule('/api/send_email_test', 'api_send_email_test', api_send_email_test, methods=['POST'])
+routes_services.add_url_rule('/api/send_email_activate', 'api_send_email_activate', api_send_email_activate, methods=['POST'])
 routes_services.add_url_rule('/api/change_password', 'api_change_password', change_password, methods=['POST'])

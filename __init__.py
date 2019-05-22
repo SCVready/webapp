@@ -25,8 +25,9 @@ def page_not_found(e):
 
 # SOCKETIO CONF
 socketio = SocketIO(app, async_mode=async_mode, manage_session=False)
-from main.events import background_thread
+from main.events import background_thread,background_thread_system_info
 socketio.start_background_task(background_thread)
+socketio.start_background_task(background_thread_system_info)
 
 # Component initialization
 from main.auth import initialize_auth

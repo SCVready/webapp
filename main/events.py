@@ -4,6 +4,12 @@ from threading import Lock, Thread
 from time import sleep
 import os, sys, socket, time, random, errno, functools, hashlib ,base64
 
+import common
+import psutil
+import shutil
+import os
+import json
+
 from .. import socketio
 from redis_db import redis_db
 
@@ -19,18 +25,62 @@ def authenticated_only(f):
 			return f(*args, **kwargs)
 	return wrapped
 
+def background_thread_system_info():
+	redis_db.connect()
+	
+	while True:
+		cpu = psutil.cpu_percent()
+		ram = psutil.virtual_memory()[2]
+	
+		stats = os.statvfs('/')
+		total = stats.f_frsize * stats.f_blocks
+		free = stats.f_frsize * stats.f_bavail
+		used = total - free
+		disk = float(used)/float(total)*100
+
+		data = {
+		"cpu": cpu,
+		"ram": ram,
+		"disk": disk}
+		redis_db.publish("system_info",json.dumps(data))
+		socketio.sleep(1)
+
 def background_thread():
 	redis_db.connect()
 	redis_db.subscribe('liveview')
-	redis_db.subscribe('kinectalarm_event')
+	redis_db.subscribe('new_det')
+	redis_db.subscribe('system_info')
+
+	redis_db.subscribe('event_default')
+	redis_db.subscribe('event_success')
+	redis_db.subscribe('event_error')
+	redis_db.subscribe('event_warning')
+	redis_db.subscribe('event_info')
+
 	while True:
 		message = redis_db.get_message()
 		if message and message['type'] == 'pmessage':
 			if message['channel'] == 'liveview':
 				socketio.emit('liveview', {'frame': message['data']}, namespace='/liveview')
-			if message['channel'] == 'kinectalarm_event':
-				socketio.emit('kinectalarm_event', {'event': message['data']}, namespace='/events')
-		socketio.sleep(0.05)
+
+			elif message['channel'] == 'event_default':
+				socketio.emit('default', {'content': message['data']}, namespace='/events')
+			elif message['channel'] == 'event_success':
+				socketio.emit('success', {'content': message['data']}, namespace='/events')
+			elif message['channel'] == 'event_error':
+				socketio.emit('error', {'content': message['data']}, namespace='/events')
+			elif message['channel'] == 'event_warning':
+				socketio.emit('warning', {'content': message['data']}, namespace='/events')
+			elif message['channel'] == 'event_info':
+				socketio.emit('info', {'content': message['data']}, namespace='/events')
+
+			elif message['channel'] == 'new_det':
+				socketio.emit('newdet', {'event': message['data']}, namespace='/detections')
+			elif message['channel'] == 'system_info':
+				data = json.loads(message['data'])
+				socketio.emit('system_info', {'cpu': data['cpu'],'ram': data['ram'],'disk': data['disk']}, namespace='/system_info')
+		else:
+			socketio.sleep(0.05)
 
 @socketio.on('connect', namespace='/liveview')
 @authenticated_only

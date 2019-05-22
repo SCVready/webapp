@@ -17,7 +17,7 @@
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
-  <link href="css/js-snackbar.min.css" rel="stylesheet">
+  <link href="css/js-snackbar.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
 
   {% block page_style %}{% endblock %}
@@ -25,9 +25,6 @@
 </head>
 
 <body id="page-top">
-
-  <!-- Snackbar -->
-  <div id="snackbar"></div>
 
   <!-- Page Wrapper -->
   <div id="wrapper">
@@ -116,7 +113,7 @@
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
-  <script src="js/js-snackbar.min.js"></script>
+  <script src="js/js-snackbar.js"></script>
 
   <!-- Page level plugins -->
   <script src="vendor/datatables/jquery.dataTables.min.js"></script>
@@ -147,10 +144,34 @@
 
       var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/events');
       
-      socketio.on('kinectalarm_event', function(data) {
+      socketio.on('default', function(data) {
         SnackBar({
-          message: "New Intrusion",
-          status: "danger"
+          message: data.content,
+          status: "default"
+        });
+      });
+      socketio.on('success', function(data) {
+        SnackBar({
+          message: data.content,
+          status: "success"
+        });
+      });
+      socketio.on('error', function(data) {
+        SnackBar({
+          message: data.content,
+          status: "error"
+        });
+      });
+      socketio.on('warning', function(data) {
+        SnackBar({
+          message: data.content,
+          status: "warning"
+        });
+      });
+      socketio.on('info', function(data) {
+        SnackBar({
+          message: data.content,
+          status: "info"
         });
       });
     };
