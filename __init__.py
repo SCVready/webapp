@@ -5,7 +5,10 @@ from flask_socketio import SocketIO, emit, disconnect
 # GLOBAL VARIABLES
 async_mode = None
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "todo" # a secret key for your app TODO rnd generation on init.d
+
+with open("/etc/gunicorn/webapp-key") as f:
+    flask_key = f.read()
+app.config['SECRET_KEY'] = flask_key
 
 # LOGIN CONF
 login_manager = LoginManager()
