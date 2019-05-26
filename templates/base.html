@@ -177,7 +177,22 @@
     };
 
     listes_to_events();
-  
+
+    {% if not kinectalarm_running%}
+    SnackBar({
+          message: "Kinectalarm is not running",
+          status: "danger",
+          timeout: false
+    });
+    {% endif %}
+    
+    {% if not emailsender_running%}
+    SnackBar({
+          message: "Emailsender is not running",
+          status: "danger",
+          timeout: false
+    });
+    {% endif %}
   </script>
   {% block page_script %}{% endblock %}
 

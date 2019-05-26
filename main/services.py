@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, abort, redirect, url_for, Response, g, send_file, Blueprint
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 import json
+import os
 
 import common
 from auth import User,get_login_pass_hash,set_login_pass_hash
@@ -118,6 +119,26 @@ def delete_detection():
 	redis_db.publish('kinectalarm','det del {}'.format(value))
 	return 'ok'
 
+@login_required
+def system_reboot():
+	value = request.form['system_reboot']
+	redis_db.publish('event_warning','System Rebooting')
+	os.system("reboot")
+	return 'ok'
+
+@login_required
+def config_ssh():
+	if request.form['ssh'] == 'false':
+		redis_db.publish('event_info','SSH server shutdown')
+		redis_db.set_var('ssh_activate','0')
+		os.system("/etc/init.d/sshd stop")
+		
+	elif request.form['ssh'] == 'true':
+		redis_db.publish('event_info','SSH server started')
+		redis_db.set_var('ssh_activate','1')
+		os.system("/etc/init.d/sshd start")
+	return 'ok'
+
 # Routes
 routes_services.add_url_rule('/request_login', 'request_login', request_login, methods=['POST'])
 routes_services.add_url_rule('/api/det_status', 'api_det_status', api_det_status, methods=['GET', 'POST'])
@@ -133,3 +154,5 @@ routes_services.add_url_rule('/api/change_email_data', 'api_change_email_data', 
 routes_services.add_url_rule('/api/send_email_test', 'api_send_email_test', api_send_email_test, methods=['POST'])
 routes_services.add_url_rule('/api/send_email_activate', 'api_send_email_activate', api_send_email_activate, methods=['POST'])
 routes_services.add_url_rule('/api/change_password', 'api_change_password', change_password, methods=['POST'])
+routes_services.add_url_rule('/api/system_reboot', 'system_reboot', system_reboot, methods=['POST'])
+routes_services.add_url_rule('/api/config_ssh', 'config_ssh', config_ssh, methods=['POST'])

@@ -12,7 +12,7 @@
 <!-- Content Row -->
 {% block page_content %}
 <div class="row">
-  <div class="col-lg-6 mb-4">
+  <div class="col-lg-6 col-xl-4 mb-4">
     <!-- Email options -->
     <div class="card shadow mb-2">
       <div class="card-header py-2">
@@ -50,7 +50,7 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-6 mb-4">
+  <div class="col-lg-6 col-xl-4 mb-4">
     <!-- Detection options -->
     <div class="card shadow mb-2">
       <div class="card-header py-2">
@@ -58,18 +58,10 @@
       </div>
       <div class="card-body">
 	      <h4 class="small font-weight-bold">Clear all detections</h4>
-	      <button onclick = "delete_captures();" class="btn btn-primary btn-user btn-block mb-2">Clear all detections</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-lg-6 mb-4">
-      <!-- Approach -->
-    <div class="card shadow mb-2">
-      <div class="card-header py-2">
-        <h6 class="m-0 font-weight-bold text-primary">Detection controls</h6>
-      </div>
-      <div class="card-body">
+	      <button data-toggle="modal" data-target="#delete_detections" class="btn btn-primary btn-user btn-block mb-2">Clear all detections</button>
+        
+        <div class="dropdown-divider mt-4 mb-4"></div>
+        
         <div class="form-group">
           <h4 class="small font-weight-bold">Threshold</h4>
           <input class="form-control form-control-user mb-2" id="field_threshold" value="{{threshold}}">
@@ -77,12 +69,68 @@
           <input class="form-control form-control-user mb-2" id="field_sensitivity" value="{{sensitivity}}">
         </div>
         <button class="btn btn-primary btn-user btn-block" onclick = 'submit_det_controls();'>Submit</button>
-        
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6 col-xl-4 mb-4">
+    <!-- Detection options -->
+    <div class="card shadow mb-2">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">System options</h6>
+      </div>
+      <div class="card-body">
+        <h4 class="small font-weight-bold">SSH activate</h4>
+        <div class="mb-2">
+          <label class="switch">
+            <input type="checkbox" name="activate_ssh" {% if ssh_activate %}checked{% endif %}>
+            <span class="slider_switch round"></span>
+          </label>
+        </div>
+        <div class="dropdown-divider mt-4 mb-4"></div>
+        <h4 class="small font-weight-bold">System reboot</h4>
+        <button data-toggle="modal" data-target="#reboot_system" class="btn btn-primary btn-user btn-block mb-2">Reboot</button>
       </div>
     </div>
   </div>
 
 </div>
+
+<div class="modal fade" id="delete_detections" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Delete all captures.</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Press delete to confirm.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" type="button" onclick = "delete_captures();" data-dismiss="modal">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="reboot_system" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Reboot system.</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Press reboot to confirm.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" type="button" onclick = "request_system_reboot();" data-dismiss="modal">Reboot</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% endblock %}
 
@@ -115,11 +163,23 @@
     $.post( "/api/send_email_test",{ email_test: 'true'});
   };
 
+  function request_system_reboot(){
+    $.post( "/api/system_reboot",{ system_reboot: 'true'});
+  };
+
   $('input[name=activate_email]').change(function(){
     if($('input[name=activate_email]').is(':checked')){
       $.post( "/api/send_email_activate",{ activate: '1'});
     } else {
       $.post( "/api/send_email_activate",{ activate: '0'});
+    }
+  });
+  
+  $('input[name=activate_ssh]').change(function(){
+    if($('input[name=activate_ssh]').is(':checked')){
+      $.post( "/api/config_ssh",{ ssh: 'true'});
+    } else {
+      $.post( "/api/config_ssh",{ ssh: 'false'});
     }
   });
 

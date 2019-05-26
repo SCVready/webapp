@@ -18,6 +18,17 @@ def index():
 
 @login_required
 def dashboard():
+
+	if redis_db.ttl('emailsender_watchdog') >= 0:
+		emailsender_running = True
+	else: 
+		emailsender_running = False
+
+	if redis_db.ttl('kinectalarm_watchdog') >= 0:
+		kinectalarm_running = True
+	else: 
+		kinectalarm_running = False
+
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
 	det_num    = int(sqlite_db.get_number_detections())
@@ -29,16 +40,27 @@ def dashboard():
         free = stats.f_frsize * stats.f_bavail
 	used = total - free
 	used_percentage = float(used)/float(total)*100
-	return render_template('dashboard.html',det_started=det_status,lvw_started=lvw_status,cpu=cpu,ram=ram,disk=used_percentage,new_intrusions=0,total_intrusions=det_num,presenceos_version='0.0',kinectalarm_version='0.0',webapp_version='0.0')
+	return render_template('dashboard.html',emailsender_running=emailsender_running,kinectalarm_running=kinectalarm_running,det_started=det_status,lvw_started=lvw_status,cpu=cpu,ram=ram,disk=used_percentage,new_intrusions=0,total_intrusions=det_num,presenceos_version='0.0',kinectalarm_version='0.0',webapp_version='0.0')
 
 @login_required
 def detection():
+
+	if redis_db.ttl('emailsender_watchdog') >= 0:
+		emailsender_running = True
+	else: 
+		emailsender_running = False
+
+	if redis_db.ttl('kinectalarm_watchdog') >= 0:
+		kinectalarm_running = True
+	else: 
+		kinectalarm_running = False
+
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
 	det_num    = int(sqlite_db.get_number_detections())
 	detections = sqlite_db.get_detecions()
 
-	return render_template('detection.html',det_started=det_status,lvw_started=lvw_status,det_num = det_num,detections=detections)
+	return render_template('detection.html',emailsender_running=emailsender_running,kinectalarm_running=kinectalarm_running,det_started=det_status,lvw_started=lvw_status,det_num = det_num,detections=detections)
 
 @login_required
 def get_det_image(det_number,img_number):
@@ -57,16 +79,37 @@ def get_det_tar(det_number):
 
 @login_required
 def liveview():
+
+	if redis_db.ttl('emailsender_watchdog') >= 0:
+		emailsender_running = True
+	else: 
+		emailsender_running = False
+
+	if redis_db.ttl('kinectalarm_watchdog') >= 0:
+		kinectalarm_running = True
+	else: 
+		kinectalarm_running = False
+
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
 	tilt = int(redis_db.get_var('tilt'))
 	brightness = int(redis_db.get_var('brightness'))
 	contrast = int(redis_db.get_var('contrast'))
 
-	return render_template('liveview.html',det_started=det_status,lvw_started=lvw_status,tilt=tilt,brightness=brightness,contrast=contrast)
+	return render_template('liveview.html',emailsender_running=emailsender_running,kinectalarm_running=kinectalarm_running,det_started=det_status,lvw_started=lvw_status,tilt=tilt,brightness=brightness,contrast=contrast)
 
 @login_required
 def options():
+
+	if redis_db.ttl('emailsender_watchdog') >= 0:
+		emailsender_running = True
+	else: 
+		emailsender_running = False
+
+	if redis_db.ttl('kinectalarm_watchdog') >= 0:
+		kinectalarm_running = True
+	else: 
+		kinectalarm_running = False
 	det_status  = int(redis_db.get_var('det_status'))
 	lvw_status  = int(redis_db.get_var('lvw_status'))
 	threshold   = int(redis_db.get_var('threshold'))
@@ -79,12 +122,25 @@ def options():
 	smtp_server_port = int(redis_db.get_var('smtp_server_port'))
 	send_email_activate = int(redis_db.get_var('send_email_activate'))
 
-	return render_template('options.html', det_started=det_status, lvw_started=lvw_status, threshold=threshold, sensitivity=sensitivity, 
+	ssh_activate = int(redis_db.get_var('ssh_activate'))
+
+	return render_template('options.html',emailsender_running=emailsender_running,kinectalarm_running=kinectalarm_running, det_started=det_status, lvw_started=lvw_status, threshold=threshold, sensitivity=sensitivity, 
 		email_from=email_from, password=password, email_to=email_to, smtp_server_url=smtp_server_url ,
-		smtp_server_port=smtp_server_port, send_email_activate=send_email_activate)
+		smtp_server_port=smtp_server_port, send_email_activate=send_email_activate,ssh_activate=ssh_activate)
 
 @login_required
 def log():
+
+	if redis_db.ttl('emailsender_watchdog') >= 0:
+		emailsender_running = True
+	else: 
+		emailsender_running = False
+
+	if redis_db.ttl('kinectalarm_watchdog') >= 0:
+		kinectalarm_running = True
+	else: 
+		kinectalarm_running = False
+
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
 	log_text = tuple()
@@ -94,7 +150,7 @@ def log():
 			line = fp.readline()
 			log_text = log_text + (line.strip().decode('utf-8'),)
 
-	return render_template('log.html',det_started=det_status,lvw_started=lvw_status,log_text=log_text)
+	return render_template('log.html',emailsender_running=emailsender_running,kinectalarm_running=kinectalarm_running,det_started=det_status,lvw_started=lvw_status,log_text=log_text)
 
 def login():
 	return render_template('login.html')

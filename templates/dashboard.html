@@ -87,35 +87,35 @@
 {% block page_script %}
 
 <script type="text/javascript" charset="utf-8">
-  
-    function listes_to_events() {
 
-      var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/system_info');
-      
-      socketio.on('system_info', function(data) {
-	$("#cpu").css('width', data.cpu+'%');
-	$("#cpu_num").text(data.cpu.toFixed(1)+'%');
-	if(data.cpu>90){$("#cpu").removeClass("bg-success").removeClass("bg-warning").addClass("bg-danger")}
-	else if(data.cpu>80){$("#cpu").removeClass("bg-danger").removeClass("bg-success").addClass("bg-warning")}
-	else{$("#cpu").removeClass("bg-danger").removeClass("bg-warning").addClass("bg-success")}
+  function listes_to_events() {
 
-	$("#ram").css('width', data.ram+'%');
-	$("#ram_num").text(data.ram.toFixed(1)+'%');
-	if(data.ram>90){$("#ram").removeClass("bg-success").removeClass("bg-warning").addClass("bg-danger")}
-	else if(data.ram>80){$("#ram").removeClass("bg-danger").removeClass("bg-success").addClass("bg-warning")}
-	else{$("#ram").removeClass("bg-danger").removeClass("bg-warning").addClass("bg-success")}
+    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/system_info');
+    
+    socketio.on('system_info', function(data) {
+    $("#cpu").css('width', data.cpu+'%');
+    $("#cpu_num").text(data.cpu.toFixed(1)+'%');
+    if(data.cpu>90){$("#cpu").removeClass("bg-success").removeClass("bg-warning").addClass("bg-danger")}
+    else if(data.cpu>80){$("#cpu").removeClass("bg-danger").removeClass("bg-success").addClass("bg-warning")}
+    else{$("#cpu").removeClass("bg-danger").removeClass("bg-warning").addClass("bg-success")}
 
-	$("#disk").css('width', data.disk+'%');
-	$("#disk_num").text(data.disk.toFixed(1)+'%');
-	if(data.disk>90){$("#disk").removeClass("bg-success").removeClass("bg-warning").addClass("bg-danger")}
-	else if(data.disk>80){$("#disk").removeClass("bg-danger").removeClass("bg-success").addClass("bg-warning")}
-	else{$("#disk").removeClass("bg-danger").removeClass("bg-warning").addClass("bg-success")}
+    $("#ram").css('width', data.ram+'%');
+    $("#ram_num").text(data.ram.toFixed(1)+'%');
+    if(data.ram>90){$("#ram").removeClass("bg-success").removeClass("bg-warning").addClass("bg-danger")}
+    else if(data.ram>80){$("#ram").removeClass("bg-danger").removeClass("bg-success").addClass("bg-warning")}
+    else{$("#ram").removeClass("bg-danger").removeClass("bg-warning").addClass("bg-success")}
 
-      });
-    };
+    $("#disk").css('width', data.disk+'%');
+    $("#disk_num").text(data.disk.toFixed(1)+'%');
+    if(data.disk>90){$("#disk").removeClass("bg-success").removeClass("bg-warning").addClass("bg-danger")}
+    else if(data.disk>80){$("#disk").removeClass("bg-danger").removeClass("bg-success").addClass("bg-warning")}
+    else{$("#disk").removeClass("bg-danger").removeClass("bg-warning").addClass("bg-success")}
 
-    listes_to_events();
-  
+    });
+  };
+
+  listes_to_events();
+
   </script>
 
 {% endblock %}
