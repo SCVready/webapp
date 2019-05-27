@@ -18,6 +18,11 @@
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
+  <style type="text/css">
+  .wrong_input::-webkit-input-placeholder {
+    color: #D40000}
+  </style>
+
 </head>
 
 <body class="bg-gradient-primary">
@@ -44,8 +49,8 @@
                     </div>
                     <div class="form-group">
                       <div class="custom-control custom-checkbox small">
-                        <input type="checkbox" class="custom-control-input" id="customCheck">
-                        <label class="custom-control-label" for="customCheck">Remember Me</label>
+                        <input type="checkbox" class="custom-control-input" id="remember">
+                        <label class="custom-control-label" for="remember">Remember Me</label>
                       </div>
                     </div>
                     <button class="btn btn-primary btn-user btn-block" onclick = 'login();'>
@@ -80,13 +85,16 @@
   function login(){
 
     var input_pass = document.getElementById('field_pass').value;
+    var remember = document.getElementById("remember").checked;
 
-    $.post( "/request_login",{ password: input_pass} ,function( data ){
+    $.post( "/request_login",{ password: input_pass,remember:remember} ,function( data ){
       if( data == 'ok'){
           window.location.href = "/";
         }
       else{
           document.getElementById('field_pass').value = "";
+          $('#field_pass').addClass('wrong_input');
+          $("#field_pass").attr("placeholder", "Wrong password");
       }
     });
   };

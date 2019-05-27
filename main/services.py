@@ -10,8 +10,12 @@ from redis_db import redis_db
 routes_services = Blueprint('services', __name__, template_folder='templates', static_folder='static')
 
 def request_login():
+
 	if request.form['password'] == get_login_pass_hash():
-		login_user(User(1))
+		if request.form['remember'] == "true":
+			login_user(User(1),remember=True)
+		else:
+			login_user(User(1))
 		return 'ok'
 	else:
 		return 'no'
