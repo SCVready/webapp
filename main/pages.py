@@ -75,7 +75,7 @@ def get_det_video(det_number):
 @login_required
 def get_det_tar(det_number):
 	filename = sqlite_db.get_detecion_img(det_number)
-	return send_file(filename, mimetype='application/tar', add_etags=False, cache_timeout=0)
+	return send_file(filename, mimetype='application/zip', add_etags=False, cache_timeout=0)
 
 @login_required
 def liveview():
@@ -171,6 +171,6 @@ routes_pages.add_url_rule('/liveview', 'liveview', liveview, methods=['GET', 'PO
 routes_pages.add_url_rule('/options', 'options', options, methods=['GET'])
 routes_pages.add_url_rule('/log', 'log', log, methods=['GET'])
 routes_pages.add_url_rule('/detection/<det_number>/<img_number>', 'get_det_image', get_det_image, methods=['GET'])
-routes_pages.add_url_rule('/detection_tar/<det_number>_capture.tar', 'get_det_tar', get_det_tar, methods=['GET'])
+routes_pages.add_url_rule('/detection_tar/<det_number>_capture.zip', 'get_det_tar', get_det_tar, methods=['GET'])
 routes_pages.add_url_rule('/detection_vid/<det_number>', 'get_det_video', get_det_video, methods=['GET'])
 

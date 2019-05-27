@@ -81,7 +81,7 @@
                 <button id="btn_previous" class="btn btn-sm btn-primary shadow-sm float-left"{% if det_num == 0 %} disabled {% endif %} onclick = "show_previous();"><i class="fas fa-angle-left fa-sm text-white-50"></i> Previous</button>
               </div>
               <div class="col">
-                <a id="btn_download" class="btn btn-sm btn-primary shadow-sm {% if det_num == 0 %} disabled {% endif %}" href="{% if det_num > 0 %}/detection_tar/{{(detections|last)[0]}}_capture.tar{% endif %}" download ><i class="fas fa-download fa-sm text-white-50"></i> Download</a>
+                <a id="btn_download" class="btn btn-sm btn-primary shadow-sm {% if det_num == 0 %} disabled {% endif %}" href="{% if det_num > 0 %}/detection_tar/{{(detections|last)[0]}}_capture.zip{% endif %}" download ><i class="fas fa-download fa-sm text-white-50"></i> Download</a>
               </div>
               <div class="col">
                 <button id="btn_next" class="btn btn-sm btn-primary shadow-sm float-right" {% if det_num == 0 %} disabled {% endif %} onclick = "show_next();">Next <i class="fas fa-angle-right fa-sm text-white-50"></i></button>
@@ -167,7 +167,7 @@
   };
 
   function change_dowload(num_det) {
-    $("#btn_download").attr("href", "/detection_tar/"+num_det+"_capture.tar");
+    $("#btn_download").attr("href", "/detection_tar/"+num_det+"_capture.zip");
   };
   
   function show_previous() {
