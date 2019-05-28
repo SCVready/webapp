@@ -28,7 +28,12 @@ def dashboard():
 		kinectalarm_running = True
 	else: 
 		kinectalarm_running = False
-
+	
+	presenceos_version = redis_db.get_var('presenceos_version')
+	kinectalarm_version = redis_db.get_var('kinectalarm_version')
+	webapp_version = redis_db.get_var('webapp_version')
+	emailsender_version = redis_db.get_var('emailsender_version')
+	
 	det_status = int(redis_db.get_var('det_status'))
 	lvw_status = int(redis_db.get_var('lvw_status'))
 	det_num    = int(sqlite_db.get_number_detections())
@@ -40,7 +45,9 @@ def dashboard():
         free = stats.f_frsize * stats.f_bavail
 	used = total - free
 	used_percentage = float(used)/float(total)*100
-	return render_template('dashboard.html',emailsender_running=emailsender_running,kinectalarm_running=kinectalarm_running,det_started=det_status,lvw_started=lvw_status,cpu=cpu,ram=ram,disk=used_percentage,new_intrusions=0,total_intrusions=det_num,presenceos_version='0.0',kinectalarm_version='0.0',webapp_version='0.0')
+	return render_template('dashboard.html',emailsender_running=emailsender_running,kinectalarm_running=kinectalarm_running,
+det_started=det_status,lvw_started=lvw_status,cpu=cpu,ram=ram,disk=used_percentage,new_intrusions=0,total_intrusions=det_num,
+presenceos_version=presenceos_version,kinectalarm_version=kinectalarm_version,webapp_version=webapp_version,emailsender_version=emailsender_version)
 
 @login_required
 def detection():
@@ -120,6 +127,7 @@ def options():
 	email_to         = redis_db.get_var('email_to')
 	smtp_server_url  = redis_db.get_var('smtp_server_url')
 	smtp_server_port = int(redis_db.get_var('smtp_server_port'))
+	smtp_server_port = smtp_server_port if smtp_server_port > 0 else ''
 	send_email_activate = int(redis_db.get_var('send_email_activate'))
 
 	ssh_activate = int(redis_db.get_var('ssh_activate'))

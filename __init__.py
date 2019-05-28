@@ -42,6 +42,8 @@ def initialice_server():
 	initialize_auth()
 	redis_db.connect();
 	redis_db.set_var('ssh_activate','0')#TODO temp
+	redis_db.set_var('presenceos_version','0.1')
+	redis_db.set_var('webapp_version','0.1')
 	sqlite_db.connect();
 
 # JINJA FILTERS

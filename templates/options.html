@@ -31,15 +31,15 @@
           
           <div class="form-group">
             <h4 class="small font-weight-bold">Sender email account</h4>
-            <input class="form-control form-control-user mb-2" id="email_from" value="{{email_from}}">
+            <input class="form-control form-control-user mb-2" id="email_from" placeholder="email@gmail.com" value="{{email_from}}">
             <h4 class="small font-weight-bold">Sender email password</h4>
-            <input class="form-control form-control-user mb-2" id="password" type="password" value="{{password}}">
+            <input class="form-control form-control-user mb-2" id="password" placeholder="password" type="password" value="{{password}}">
+            <h4 class="small font-weight-bold">Sender email Server URL</h4>
+            <input class="form-control form-control-user mb-2" id="smtp_server_url" placeholder="smtp.gmail.com" value="{{smtp_server_url}}">
+            <h4 class="small font-weight-bold">Sender email Server port</h4>
+            <input class="form-control form-control-user mb-2" id="smtp_server_port" placeholder="465" value="{{smtp_server_port}}">
             <h4 class="small font-weight-bold">Destination email account</h4>
-            <input class="form-control form-control-user mb-2" id="email_to" value="{{email_to}}">
-            <h4 class="small font-weight-bold">Email Server URL</h4>
-            <input class="form-control form-control-user mb-2" id="smtp_server_url" value="{{smtp_server_url}}">
-            <h4 class="small font-weight-bold">Email Server port</h4>
-            <input class="form-control form-control-user mb-2" id="smtp_server_port" value="{{smtp_server_port}}">
+            <input class="form-control form-control-user mb-2" id="email_to" placeholder="email@hotmail.com" value="{{email_to}}">
           </div>
           <button class="btn btn-primary btn-user btn-block mb-2" onclick = 'submit_email_data();'>Submit</button>
         
