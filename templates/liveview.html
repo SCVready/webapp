@@ -65,13 +65,13 @@
         <!-- Slider -->
         <h4 class="small font-weight-bold">Brightness</h4>  
 	      <div class="mb-4">
-	        <input type="range" min="-100" max="2000" value="{{brightness}}" class="slider" id="myRange" onchange="brightness_slider(this.value)">
+	        <input type="range" min="250" max="1500" value="{{brightness}}" class="slider" id="myRange" onchange="brightness_slider(this.value)">
 	      </div>
 	      
 	      <!-- Slider -->
         <h4 class="small font-weight-bold">Contrast</h4>  
 	      <div class="mb-0">
-	        <input type="range" min="-100" max="100" value="{{contrast}}" class="slider" id="myRange" onchange="contrast_slider(this.value)">
+	        <input type="range" min="-50" max="50" value="{{contrast}}" class="slider" id="myRange" onchange="contrast_slider(this.value)">
 	      </div>
 
       </div>
@@ -118,7 +118,7 @@
 
   function listen_to_liveview_frames() {
 
-    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/liveview');
+    var socketio = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/liveview', {forceNew: true});
     
     socketio.on('liveview', function(data) {
 	    var img = document.getElementById("liveview_img");
