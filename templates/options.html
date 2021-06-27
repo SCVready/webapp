@@ -88,6 +88,9 @@
           </label>
         </div>
         <div class="dropdown-divider mt-4 mb-4"></div>
+        <h4 class="small font-weight-bold">Expand Filesystem</h4>
+        <button id="btn_expand" data-toggle="modal" data-target="#resize_filesystem" class="btn btn-primary btn-user btn-block mb-2" {% if resizerootfs %}disabled{% endif %}>Expand Filesystem</button>
+        <div class="dropdown-divider mt-4 mb-4"></div>
         <h4 class="small font-weight-bold">System reboot</h4>
         <button data-toggle="modal" data-target="#reboot_system" class="btn btn-primary btn-user btn-block mb-2">Reboot</button>
       </div>
@@ -113,24 +116,43 @@
       </div>
     </div>
   </div>
-  
-  <div class="modal fade" id="reboot_system" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Reboot system.</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">Press reboot to confirm.</div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <button class="btn btn-primary" type="button" onclick = "request_system_reboot();" data-dismiss="modal">Reboot</button>
-        </div>
+
+<div class="modal fade" id="reboot_system" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Reboot system.</h5>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">Press reboot to confirm.</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" type="button" onclick = "request_system_reboot();" data-dismiss="modal">Reboot</button>
       </div>
     </div>
   </div>
+</div>
+
+<div class="modal fade" id="resize_filesystem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Expand Filesystem</h5>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">This process can take several minutes to complete. The system is operative during the process</div>
+      <div class="modal-body">Press Expand to confirm</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" type="button" onclick = "request_expand_filesystem();" data-dismiss="modal">Expand</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
 
@@ -165,6 +187,11 @@
 
   function request_system_reboot(){
     $.post( "/api/system_reboot",{ system_reboot: 'true'});
+  };
+
+  function request_expand_filesystem(){
+    $.post( "/api/expand_filesystem",{ expand_filesystem: 'true'});
+    $("#btn_expand").prop('disabled', true);
   };
 
   $('input[name=activate_email]').change(function(){

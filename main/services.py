@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, abort, redirect, url_for, Res
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 import json
 import os
+import subprocess
 
 import common
 from auth import User,get_login_pass_hash,set_login_pass_hash
@@ -143,6 +144,13 @@ def config_ssh():
 		os.system("/etc/init.d/sshd start")
 	return 'ok'
 
+@login_required
+def expand_filesystem():
+	value = request.form['expand_filesystem']
+	redis_db.publish('event_warning','Expanding Filesystem')
+	subprocess.call(['/etc/init.d/resizerootfs', 'expand'])
+	return 'ok'
+
 # Routes
 routes_services.add_url_rule('/request_login', 'request_login', request_login, methods=['POST'])
 routes_services.add_url_rule('/api/det_status', 'api_det_status', api_det_status, methods=['GET', 'POST'])
@@ -160,3 +168,4 @@ routes_services.add_url_rule('/api/send_email_activate', 'api_send_email_activat
 routes_services.add_url_rule('/api/change_password', 'api_change_password', change_password, methods=['POST'])
 routes_services.add_url_rule('/api/system_reboot', 'system_reboot', system_reboot, methods=['POST'])
 routes_services.add_url_rule('/api/config_ssh', 'config_ssh', config_ssh, methods=['POST'])
+routes_services.add_url_rule('/api/expand_filesystem', 'expand_filesystem', expand_filesystem, methods=['POST'])

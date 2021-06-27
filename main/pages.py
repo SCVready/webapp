@@ -129,12 +129,13 @@ def options():
 	smtp_server_port = int(redis_db.get_var('smtp_server_port'))
 	smtp_server_port = smtp_server_port if smtp_server_port > 0 else ''
 	send_email_activate = int(redis_db.get_var('send_email_activate'))
+	resizerootfs = int(redis_db.get_var('resizerootfs'))
 
 	ssh_activate = int(redis_db.get_var('ssh_activate'))
 
 	return render_template('options.html',emailsender_running=emailsender_running,kinectalarm_running=kinectalarm_running, det_started=det_status, lvw_started=lvw_status, threshold=threshold, sensitivity=sensitivity, 
 		email_from=email_from, password=password, email_to=email_to, smtp_server_url=smtp_server_url ,
-		smtp_server_port=smtp_server_port, send_email_activate=send_email_activate,ssh_activate=ssh_activate)
+		smtp_server_port=smtp_server_port, send_email_activate=send_email_activate,ssh_activate=ssh_activate,resizerootfs=resizerootfs)
 
 @login_required
 def log():

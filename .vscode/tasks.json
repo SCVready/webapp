@@ -1,0 +1,38 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "shell",
+        "label": "sync",
+        "dependsOn" : [],
+        "dependsOrder": "sequence",
+        "command" : "rsync -rlptzv --progress --delete --exclude=.git --exclude={'.vscode','LICENSE','README.md','static'} ${workspaceRoot} root@192.168.0.22:/home/root/",
+      },
+      {
+        "type": "shell",
+        "label": "sync static files",
+        "dependsOn" : [],
+        "dependsOrder": "sequence",
+        "command" : "rsync -rlptzv --progress ${workspaceRoot}/static/* root@192.168.0.22:/var/www/localhost/html",
+      },
+      {
+        "type": "shell",
+        "label": "restart gunicorn",
+        "dependsOn" : [],
+        "dependsOrder": "sequence",
+        "command" : "ssh root@192.168.0.22 /etc/init.d/gunicorn restart",
+      },
+      {
+        "type": "shell",
+        "label": "build",
+        "dependsOn" : ["sync","sync static files","restart gunicorn"],
+        "dependsOrder": "sequence",
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+    ]
+  }
