@@ -125,6 +125,9 @@
   <!-- Time library -->
   <script src="js/moment.js"></script>
 
+  <!-- js-cookie library -->
+  <script src="js/js.cookie.min.js"></script>
+
   <!-- Change password scripts -->
   <script type="text/javascript" charset="utf-8">
   
@@ -193,6 +196,31 @@
           timeout: false
     });
     {% endif %}
+
+    /* Observe changes in the style of the sidebar */
+    var target = document.querySelector('#accordionSidebar');
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if(mutation.attributeName == "class") {
+          if(target.classList.contains('toggled')) {
+            Cookies.set('side_bar_toggled', 'true');
+          } else {
+            Cookies.remove('side_bar_toggled')
+          }
+        }
+      });
+    });
+    var config = {
+      attributes: true,
+    };
+    observer.observe(target, config);
+
+    /* Read the cookie and toggle the sidebar if needed */
+    if("true" === Cookies.get('side_bar_toggled'))
+    {
+      $("#accordionSidebar").addClass("toggled");
+    }
+
   </script>
   {% block page_script %}{% endblock %}
 
