@@ -151,6 +151,23 @@ def expand_filesystem():
 	subprocess.call(['/etc/init.d/resizerootfs', 'expand'])
 	return 'ok'
 
+@login_required
+def noip_config():
+	username = request.form['noip_username']
+	password = request.form['noip_password']
+	domain = request.form['noip_domain']
+	if subprocess.call(['/etc/init.d/noip', 'setconfig', username, password, domain]) == 0:
+		return 'ok'
+	else:
+		return 'error'
+
+@login_required
+def noip_remove_config():
+	if subprocess.call(['/etc/init.d/noip', 'removeconfig']) == 0:
+		return 'ok'
+	else:
+		return 'error'
+
 # Routes
 routes_services.add_url_rule('/request_login', 'request_login', request_login, methods=['POST'])
 routes_services.add_url_rule('/api/det_status', 'api_det_status', api_det_status, methods=['GET', 'POST'])
@@ -169,3 +186,5 @@ routes_services.add_url_rule('/api/change_password', 'api_change_password', chan
 routes_services.add_url_rule('/api/system_reboot', 'system_reboot', system_reboot, methods=['POST'])
 routes_services.add_url_rule('/api/config_ssh', 'config_ssh', config_ssh, methods=['POST'])
 routes_services.add_url_rule('/api/expand_filesystem', 'expand_filesystem', expand_filesystem, methods=['POST'])
+routes_services.add_url_rule('/api/noip_config', 'noip_config', noip_config, methods=['POST'])
+routes_services.add_url_rule('/api/noip_remove_config', 'noip_remove_config', noip_remove_config, methods=['POST'])

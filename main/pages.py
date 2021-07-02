@@ -5,6 +5,7 @@ import common
 import psutil
 import shutil
 import os
+import subprocess
 
 from auth import set_login_pass_hash,get_login_pass_hash
 from redis_db import redis_db
@@ -117,11 +118,27 @@ def options():
 		kinectalarm_running = True
 	else: 
 		kinectalarm_running = False
+
+	noip_username = ""
+	noip_domain = ""
+	noip_ip = ""
+
+	try:
+		output = subprocess.check_output("/etc/init.d/noip getconfig", shell=True)
+		output_words = output.split()
+
+		if len(output_words) > 1:
+			noip_username = output_words[0]
+			noip_domain = output_words[1]
+		if(len(output_words) > 2):
+			noip_ip = output_words[2]
+	except subprocess.CalledProcessError as grepexc:                                                                                                   
+		pass
+
 	det_status  = int(redis_db.get_var('det_status'))
 	lvw_status  = int(redis_db.get_var('lvw_status'))
 	threshold   = int(redis_db.get_var('threshold'))
 	sensitivity = int(redis_db.get_var('sensitivity'))
-
 	email_from       = redis_db.get_var('email_from')
 	password         = redis_db.get_var('password')
 	email_to         = redis_db.get_var('email_to')
@@ -130,12 +147,26 @@ def options():
 	smtp_server_port = smtp_server_port if smtp_server_port > 0 else ''
 	send_email_activate = int(redis_db.get_var('send_email_activate'))
 	resizerootfs = int(redis_db.get_var('resizerootfs'))
-
 	ssh_activate = int(redis_db.get_var('ssh_activate'))
 
-	return render_template('options.html',emailsender_running=emailsender_running,kinectalarm_running=kinectalarm_running, det_started=det_status, lvw_started=lvw_status, threshold=threshold, sensitivity=sensitivity, 
-		email_from=email_from, password=password, email_to=email_to, smtp_server_url=smtp_server_url ,
-		smtp_server_port=smtp_server_port, send_email_activate=send_email_activate,ssh_activate=ssh_activate,resizerootfs=resizerootfs)
+	return render_template('options.html',
+		emailsender_running=emailsender_running,
+		kinectalarm_running=kinectalarm_running,
+		det_started=det_status,
+		lvw_started=lvw_status,
+		threshold=threshold,
+		sensitivity=sensitivity, 
+		email_from=email_from,
+		password=password,
+		email_to=email_to,
+		smtp_server_url=smtp_server_url ,
+		smtp_server_port=smtp_server_port,
+		send_email_activate=send_email_activate,
+		ssh_activate=ssh_activate,
+		resizerootfs=resizerootfs,
+		noip_username = noip_username,
+		noip_domain = noip_domain,
+		noip_ip = noip_ip)
 
 @login_required
 def log():

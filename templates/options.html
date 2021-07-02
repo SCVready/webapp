@@ -12,9 +12,9 @@
 <!-- Content Row -->
 {% block page_content %}
 <div class="row">
-  <div class="col-lg-6 col-xl-4 mb-4">
+  <div class="col-lg-6 col-xl-4">
     <!-- Email options -->
-    <div class="card shadow mb-2">
+    <div class="card shadow mb-4">
       <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">Email options</h6>
       </div>
@@ -50,18 +50,16 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-6 col-xl-4 mb-4">
+  <div class="col-lg-6 col-xl-4">
     <!-- Detection options -->
-    <div class="card shadow mb-2">
+    <div class="card shadow mb-4">
       <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">Detection options</h6>
       </div>
       <div class="card-body">
-	      <h4 class="small font-weight-bold">Clear all detections</h4>
-	      <button data-toggle="modal" data-target="#delete_detections" class="btn btn-primary btn-user btn-block mb-2">Clear all detections</button>
-        
+        <h4 class="small font-weight-bold">Clear all detections</h4>
+        <button data-toggle="modal" data-target="#delete_detections" class="btn btn-primary btn-user btn-block mb-2">Clear all detections</button>
         <div class="dropdown-divider mt-4 mb-4"></div>
-        
         <div class="form-group">
           <h4 class="small font-weight-bold">Threshold</h4>
           <input class="form-control form-control-user mb-2" id="field_threshold" value="{{threshold}}">
@@ -71,11 +69,32 @@
         <button class="btn btn-primary btn-user btn-block" onclick = 'submit_det_controls();'>Submit</button>
       </div>
     </div>
+
+    <!-- Noip configuration -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">Noip configuration : {{noip_ip}}</h6>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <h4 class="small font-weight-bold">Username</h4>
+          <input class="form-control form-control-user mb-2" id="noip_username" value="{{noip_username}}">
+          <h4 class="small font-weight-bold">Password</h4>
+          <input class="form-control form-control-user mb-2"  id="noip_password" type="password" value="">
+          <h4 class="small font-weight-bold">Domain</h4>
+          <input class="form-control form-control-user mb-2" id="noip_domain" value="{{noip_domain}}">
+        </div>
+        <button class="btn btn-primary btn-user btn-block" onclick = 'submit_noip_config();'>Submit</button>
+        <div class="dropdown-divider mt-4 mb-4"></div>
+        <h4 class="small font-weight-bold">Remove config</h4>
+        <button class="btn btn-primary btn-user btn-block mb-2" onclick = 'remove_noip_config();'>Remove</button>
+      </div>
+    </div>
   </div>
 
-  <div class="col-lg-6 col-xl-4 mb-4">
+  <div class="col-lg-6 col-xl-4">
     <!-- Detection options -->
-    <div class="card shadow mb-2">
+    <div class="card shadow mb-4">
       <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">System options</h6>
       </div>
@@ -95,7 +114,6 @@
         <button data-toggle="modal" data-target="#reboot_system" class="btn btn-primary btn-user btn-block mb-2">Reboot</button>
       </div>
     </div>
-  </div>
 
 </div>
 
@@ -162,7 +180,7 @@
   function delete_captures(){
     $.post( "/api/delete_detections",{ delete_detections: "true"});
   };
-  
+
   function submit_det_controls(){
     var threshold = document.getElementById('field_threshold').value;
     var sensitivity = document.getElementById('field_sensitivity').value;
@@ -179,6 +197,48 @@
     var smtp_server_port = document.getElementById('smtp_server_port').value;
     
     $.post( "/api/change_email_data",{ email_from:email_from,password:password,email_to:email_to,smtp_server_url:smtp_server_url,smtp_server_port:smtp_server_port});
+  };
+
+  function submit_noip_config(){
+    var noip_username = document.getElementById('noip_username').value;
+    var noip_password = document.getElementById('noip_password').value;
+    var noip_domain = document.getElementById('noip_domain').value;
+
+    $.post("/api/noip_config",{noip_username:noip_username,
+                               noip_password:noip_password,
+                               noip_domain:noip_domain},
+      function(data,status){
+        if(data == "ok"){
+          SnackBar({
+                message: "Noip config changed",
+                status: "success"
+          });
+        } else{
+          SnackBar({
+                message: "Error changing Noip config",
+                status: "error"
+          });
+        }
+      }
+    );
+  };
+
+  function remove_noip_config(){
+    $.post("/api/noip_remove_config",{remove:true},
+      function(data,status){
+        if(data == "ok"){
+          SnackBar({
+                message: "Noip config remove",
+                status: "success"
+          });
+        } else{
+          SnackBar({
+                message: "Error removing Noip config",
+                status: "error"
+          });
+        }
+      }
+    );
   };
 
   function request_email_test(){
