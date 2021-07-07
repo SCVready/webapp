@@ -19,8 +19,6 @@
         <h6 class="m-0 font-weight-bold text-primary">Email options</h6>
       </div>
       <div class="card-body">
-          <!-- switch -->
-          
           <h4 class="small font-weight-bold">Activate</h4>
           <div class="mb-2">
             <label class="switch">
@@ -28,7 +26,6 @@
               <span class="slider_switch round"></span>
             </label>
           </div>
-          
           <div class="form-group">
             <h4 class="small font-weight-bold">Sender email account</h4>
             <input class="form-control form-control-user mb-2" id="email_from" placeholder="email@gmail.com" value="{{email_from}}">
@@ -42,9 +39,7 @@
             <input class="form-control form-control-user mb-2" id="email_to" placeholder="email@hotmail.com" value="{{email_to}}">
           </div>
           <button class="btn btn-primary btn-user btn-block mb-2" onclick = 'submit_email_data();'>Submit</button>
-        
           <div class="dropdown-divider mt-4 mb-4"></div>
-          <!-- Button -->
           <h4 class="small font-weight-bold">Send test email</h4>
           <button class="btn btn-primary btn-user btn-block mb-2" onclick = 'request_email_test();'>Send</button>
       </div>
@@ -93,7 +88,7 @@
   </div>
 
   <div class="col-lg-6 col-xl-4">
-    <!-- Detection options -->
+    <!-- System options -->
     <div class="card shadow mb-4">
       <div class="card-header py-2">
         <h6 class="m-0 font-weight-bold text-primary">System options</h6>
@@ -112,6 +107,21 @@
         <div class="dropdown-divider mt-4 mb-4"></div>
         <h4 class="small font-weight-bold">System reboot</h4>
         <button data-toggle="modal" data-target="#reboot_system" class="btn btn-primary btn-user btn-block mb-2">Reboot</button>
+      </div>
+    </div>
+
+    <!-- SSL certificate configuration -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-2">
+        <h6 class="m-0 font-weight-bold text-primary">SSL certificate configuration</h6>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <h4 class="small font-weight-bold">Domain</h4>
+          <input class="form-control form-control-user mb-2" id="ssl_domain" value="{{ssl_domain}}">
+        </div>
+        <button class="btn btn-primary btn-user btn-block" onclick = 'submit_ssl_config();'>Submit</button>
+        <div class="dropdown-divider mt-4 mb-4"></div>
       </div>
     </div>
 
@@ -234,6 +244,26 @@
         } else{
           SnackBar({
                 message: "Error removing Noip config",
+                status: "error"
+          });
+        }
+      }
+    );
+  };
+
+  function submit_ssl_config(){
+    var ssl_domain = document.getElementById('ssl_domain').value;
+
+    $.post("/api/ssl_config",{ssl_domain:ssl_domain},
+      function(data,status){
+        if(data == "ok"){
+          SnackBar({
+                message: "SSL config changed",
+                status: "success"
+          });
+        } else{
+          SnackBar({
+                message: "Error changing SSL config",
                 status: "error"
           });
         }

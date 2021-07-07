@@ -168,6 +168,14 @@ def noip_remove_config():
 	else:
 		return 'error'
 
+@login_required
+def ssl_config():
+	domain = request.form['ssl_domain']
+	if subprocess.call(['/etc/init.d/letsencript', 'create_certificate', domain]) == 0:
+		return 'ok'
+	else:
+		return 'error'
+
 # Routes
 routes_services.add_url_rule('/request_login', 'request_login', request_login, methods=['POST'])
 routes_services.add_url_rule('/api/det_status', 'api_det_status', api_det_status, methods=['GET', 'POST'])
@@ -188,3 +196,4 @@ routes_services.add_url_rule('/api/config_ssh', 'config_ssh', config_ssh, method
 routes_services.add_url_rule('/api/expand_filesystem', 'expand_filesystem', expand_filesystem, methods=['POST'])
 routes_services.add_url_rule('/api/noip_config', 'noip_config', noip_config, methods=['POST'])
 routes_services.add_url_rule('/api/noip_remove_config', 'noip_remove_config', noip_remove_config, methods=['POST'])
+routes_services.add_url_rule('/api/ssl_config', 'ssl_config', ssl_config, methods=['POST'])
