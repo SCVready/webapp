@@ -1,6 +1,6 @@
 # webapp
 
-Project part of PresenceOS
+Part of PresenceOS project (see https://github.com/SCVready/kinectalarm).
 
 Open source project used for the frontend:
 - https://github.com/BlackrockDigital/startbootstrap-sb-admin-2
